@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALBOR CONDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* ============ RESET Y VARIABLES ============ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #000000; --black-soft: #0a0a0a; --gray-dark: #1a1a1a; --gray-medium: #2a2a2a;
+            --gray-text: #888888; --gray-light: #cccccc; --white: #ffffff; --gold: #c9a84c;
+            --gold-light: #d4b85a; --gold-dark: #a8893a; --red: #ff6b6b; --green: #6bcb77;
+        }
+        body { min-height: 100vh; font-family: 'Playfair Display', 'Times New Roman', serif; padding: 0; background: var(--black); margin: 0; }
+        
+        /* ============ NAVBAR ============ */
+        .navbar-unificado { background: rgba(0,0,0,0.92); padding: 12px 40px; border-bottom: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; }
+        .navbar-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .navbar-logo .logo-text span { color: var(--white); }
+        .navbar-logo .logo-badge { font-family: 'Inter', Arial, sans-serif; font-size: 0.5rem; font-weight: 600; padding: 2px 10px; background: rgba(201,168,76,0.15); color: var(--gold); border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; }
+        .navbar-links { display: flex; gap: 30px; list-style: none; }
+        .navbar-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.3s; }
+        .navbar-links a:hover, .navbar-links a.active { color: var(--gold); }
+        .navbar-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-profile { display: flex; align-items: center; gap: 8px; }
+        .nav-icon { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', Arial, sans-serif; }
+        .nav-icon:hover { color: var(--gold); }
+        .nav-icon i { font-size: 1.1rem; }
+        .nav-icon .admin-link { color: var(--gold); }
+        .nav-auth { display: flex; gap: 8px; }
+        .btn-nav { padding: 8px 18px; border-radius: 25px; font-family: 'Inter', Arial, sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--white); }
+        .btn-nav:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .btn-nav-register { background: var(--gold); border-color: var(--gold); color: var(--black); }
+        .btn-nav-register:hover { background: var(--gold-light); border-color: var(--gold-light); }
+        .nav-cart { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 1.2rem; transition: color 0.3s; position: relative; display: flex; align-items: center; }
+        .nav-cart:hover { color: var(--gold); }
+        .nav-cart .cart-badge { position: absolute; top: -8px; right: -12px; background: var(--gold); color: var(--black); border-radius: 50%; padding: 2px 7px; font-size: 0.6rem; font-weight: 700; display: none; }
+        .nav-toggle { display: none; background: transparent; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+        
+        /* ============ HERO ============ */
+        .hero-section { width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; align-items: center; padding: 60px 40px; position: relative; background-image: url('/static/Imagenes/casa_principal.png'); background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .hero-content { width: 100%; max-width: 1200px; display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+        .hero-content .badge { font-family: Arial, Helvetica, sans-serif; font-size: 1.2rem; font-weight: 600; letter-spacing: 4px; text-transform: uppercase; color: var(--white); text-shadow: 0 2px 20px rgba(0,0,0,0.9); display: block; text-align: center; width: 100%; margin-top: 10px; }
+        .hero-content .name { font-size: 3.8rem; font-weight: 700; color: var(--white); line-height: 1.1; letter-spacing: 2px; text-shadow: 0 2px 30px rgba(0,0,0,0.8); text-align: left; width: 100%; margin-bottom: 20px; }
+        .hero-content .name span { color: var(--gold); }
+        .seccion-negra { width: 100%; min-height: 60vh; background: var(--black-soft); display: flex; align-items: center; justify-content: flex-start; padding: 60px 40px; border-top: 1px solid rgba(255,255,255,0.03); }
+        .texto-negro { font-family: 'Inter', Arial, sans-serif; font-size: 1rem; font-weight: 300; color: var(--gray-light); line-height: 1.8; text-align: left; width: 100%; max-width: 900px; margin: 0 auto; }
+        .seccion-servicios { width: 100%; padding: 80px 40px; background: var(--black-soft); border-top: 1px solid rgba(255,255,255,0.03); }
+        .servicios-container { max-width: 1100px; margin: 0 auto; }
+        .servicios-titulo { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: var(--white); margin-bottom: 2cm; letter-spacing: 3px; text-align: center; }
+        .servicios-grid { display: flex; flex-direction: row; gap: 30px; flex-wrap: wrap; }
+        .servicio-card { flex: 1; min-width: 250px; background: var(--gray-dark); padding: 20px; border-radius: 0; border-bottom: 3px solid var(--gold); box-shadow: 0 8px 30px rgba(0,0,0,0.3); transition: transform 0.2s ease, box-shadow 0.3s ease; display: flex; flex-direction: column; gap: 1cm; padding: 15px; border: 1px solid rgba(255,255,255,0.03); margin: 10px; }
+        .servicio-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0,0,0,0.5); }
+        .servicio-nombre { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--white); text-align: center; margin-bottom: 8px; }
+        .servicio-imagen { width: 100%; height: 220px; object-fit: cover; border-radius: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 1cm; border: 1px solid rgba(255,255,255,0.05); }
+        .servicio-descripcion { font-family: 'Georgia', serif; font-size: 1rem; font-weight: 300; color: var(--gray-text); text-align: center; line-height: 1.6; }
+        
+        /* ============ MODALES ============ */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 999; justify-content: center; align-items: center; padding: 20px; }
+        .modal.mostrar { display: flex; }
+        .modal-contenido { background: var(--gray-dark); border-radius: 0; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: modalAnimacion 0.3s ease; border: 1px solid rgba(255,255,255,0.03); }
+        @keyframes modalAnimacion { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.05); background: var(--black); border-radius: 0; }
+        .modal-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--white); margin: 0; }
+        .modal-header h2 i { color: var(--gold); }
+        .modal-cerrar { background: none; border: none; font-size: 2.5rem; color: rgba(255,255,255,0.3); cursor: pointer; transition: color 0.3s; line-height: 1; }
+        .modal-cerrar:hover { color: var(--white); }
+        .modal-body { padding: 30px; }
+        .producto-item { display: flex; align-items: center; gap: 20px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .producto-item:last-child { border-bottom: none; }
+        .producto-imagen { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); }
+        .producto-info { flex: 1; }
+        .producto-info h4 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--white); margin-bottom: 5px; }
+        .producto-info p { font-family: 'Inter', Arial, sans-serif; font-size: 0.9rem; color: var(--gray-text); margin: 0; }
+        .producto-precio { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--gold); }
+        .btn-carrito { background: var(--gold); color: var(--black); border: none; padding: 6px 14px; border-radius: 0; font-size: 0.8rem; cursor: pointer; transition: background 0.3s; font-family: 'Inter', Arial, sans-serif; display: flex; align-items: center; gap: 6px; font-weight: 600; }
+        .btn-carrito:hover { background: var(--gold-light); }
+        .btn-ver-detalle { background: transparent; color: var(--gold); border: 1px solid var(--gold); padding: 4px 10px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; transition: all 0.3s; }
+        .btn-ver-detalle:hover { background: rgba(201,168,76,0.1); }
+        
+        /* ============ MODAL DE AUTENTICACIÓN ============ */
+        .modal-auth { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 999999 !important; justify-content: center; align-items: center; padding: 20px; }
+        .modal-auth.mostrar { display: flex; }
+        .modal-auth-contenido { background: var(--gray-dark); max-width: 400px; width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); animation: modalAnimacion 0.3s ease; border: 1px solid rgba(255,255,255,0.05); }
+        .modal-auth-contenido::-webkit-scrollbar { width: 4px; }
+        .modal-auth-contenido::-webkit-scrollbar-track { background: var(--black-soft); }
+        .modal-auth-contenido::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .modal-auth-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.05); background: var(--black); border-radius: 16px 16px 0 0; }
+        .modal-auth-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--white); margin: 0; }
+        .modal-auth-header h2 i { margin-right: 10px; color: var(--gold); }
+        .modal-auth-cerrar { background: none; border: none; font-size: 2rem; color: rgba(255,255,255,0.4); cursor: pointer; transition: color 0.3s; line-height: 1; }
+        .modal-auth-cerrar:hover { color: var(--white); }
+        .modal-auth-body { padding: 30px; }
+        .modal-auth-body .form-group { margin-bottom: 18px; }
+        .modal-auth-body .form-group label { display: block; font-family: 'Inter', Arial, sans-serif; font-size: 0.8rem; font-weight: 600; color: var(--gray-text); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .modal-auth-body .form-group input { width: 100%; padding: 12px 16px; background: var(--black-soft); border: 1px solid var(--gray-medium); border-radius: 10px; font-family: 'Inter', Arial, sans-serif; font-size: 0.95rem; color: var(--white); transition: border 0.3s; outline: none; }
+        .modal-auth-body .form-group input:focus { border-color: var(--gold); }
+        .modal-auth-body .form-group input::placeholder { color: #444444; }
+        .modal-auth-body .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-auth-submit { width: 100%; padding: 14px; background: var(--gold); color: var(--black); border: none; border-radius: 10px; font-family: 'Inter', Arial, sans-serif; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.3s; }
+        .btn-auth-submit:hover { background: var(--gold-light); }
+        .auth-link { text-align: center; font-family: 'Inter', Arial, sans-serif; font-size: 0.9rem; color: var(--gray-text); margin-top: 15px; }
+        .auth-link a { color: var(--gold); text-decoration: none; font-weight: 600; }
+        .auth-link a:hover { text-decoration: underline; }
+        
+        /* ============================================================
+           FORZAR Z-INDEX DE SWEETALERT POR ENCIMA DEL MODAL
+           ============================================================ */
+        .swal2-container {
+            z-index: 99999999 !important;
+        }
+        .swal2-popup {
+            z-index: 99999999 !important;
+        }
+        .swal2-backdrop {
+            z-index: 99999998 !important;
+        }
+        
+        .footer-unificado { background: var(--black-soft); border-top: 1px solid rgba(255,255,255,0.03); padding: 60px 40px 0; margin-top: 40px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .footer-col h3, .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--white); margin-bottom: 15px; }
+        .footer-col h3 { font-size: 1.3rem; }
+        .footer-col h3 span { color: var(--gold); }
+        .footer-col p { color: var(--gray-text); font-size: 0.9rem; line-height: 1.6; max-width: 300px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col ul li a { color: var(--gray-text); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: var(--gold); }
+        .footer-col .footer-contact li { color: var(--gray-text); font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+        .footer-col .footer-contact li i { color: var(--gold); width: 18px; }
+        .footer-social { display: flex; gap: 12px; margin-top: 15px; }
+        .footer-social a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.03); color: var(--gray-text); transition: all 0.3s ease; text-decoration: none; }
+        .footer-social a:hover { background: var(--gold); color: var(--black); }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 20px 0; }
+        .footer-bottom-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .footer-bottom p { color: var(--gray-text); font-size: 0.8rem; }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
+        .footer-bottom-links a:hover { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .hero-content .name { font-size: 2.5rem; }
+            .hero-content .badge { font-size: 0.9rem; letter-spacing: 2px; }
+            .seccion-negra { min-height: auto; padding: 40px 20px; }
+            .texto-negro { font-size: 0.9rem; margin: 0; }
+            .seccion-servicios { padding: 40px 20px; }
+            .servicios-titulo { font-size: 2rem; }
+            .servicios-grid { flex-direction: column; gap: 20px; }
+            .servicio-card { padding: 20px; }
+            .servicio-nombre { font-size: 1.2rem; }
+            .servicio-descripcion { font-size: 0.9rem; }
+            .navbar-unificado { padding: 10px 20px; }
+            .navbar-links { display: none; flex-direction: column; width: 100%; padding: 20px 0; gap: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); margin-top: 12px; }
+            .navbar-links.open { display: flex; }
+            .navbar-actions { display: none; }
+            .navbar-actions.open { display: flex; flex-direction: column; width: 100%; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); }
+            .nav-toggle { display: block; }
+            .footer-container { grid-template-columns: 1fr; gap: 30px; padding: 30px 0; }
+            .footer-unificado { padding: 40px 20px 0; }
+            .footer-bottom-container { flex-direction: column; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .hero-content .name { font-size: 1.8rem; }
+            .hero-content .badge { font-size: 0.7rem; letter-spacing: 1px; }
+            .servicios-titulo { font-size: 1.6rem; }
+            .servicio-nombre { font-size: 1rem; }
+            .navbar-logo { font-size: 1rem; }
+            .navbar-logo .logo-badge { display: none; }
+            .footer-col p { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-unificado">
+        <div class="navbar-container">
+            <a href="/index.html" class="navbar-logo"><span class="logo-text">ALBOR <span>CONDE</span></span><span class="logo-badge">MIPYME</span></a>
+            <ul class="navbar-links">
+                <li><a href="/index.html" class="active" id="navInicio">Inicio</a></li>
+                <li><a href="/catalogo.html" id="navCatalogo">Catálogo</a></li>
+                <li><a href="/contacto.html" id="navContacto">Contacto</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="nav-profile" id="navProfile" style="display:none;">
+                    <a href="/perfil.html" class="nav-icon" title="Mi Perfil"><i class="fas fa-user-circle"></i><span id="navUserName">Usuario</span></a>
+                    <a href="/historial-pedidos.html" class="nav-icon" title="Mis Pedidos"><i class="fas fa-box"></i></a>
+                    <a href="/admin.html" id="navAdminLink" class="nav-icon admin-link" style="display:none;" title="Panel Admin"><i class="fas fa-cog"></i></a>
+                    <button class="nav-icon" id="navLogout" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+                <div class="nav-auth" id="navAuth">
+                    <button class="btn-nav" id="navBtnLogin">Iniciar Sesión</button>
+                    <button class="btn-nav btn-nav-register" id="navBtnRegister">Registrarse</button>
+                </div>
+                <a href="/carrito.html" class="nav-cart" title="Carrito"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="navCartBadge">0</span></a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menú"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="badge">MICROEMPRESA <br />PRIVADA</span>
+            <h1 class="name">INMOBILIARIA <br /><span>ALBOR-CONDE</span></h1>
+        </div>
+    </section>
+
+    <div class="seccion-negra">
+        <p class="texto-negro">
+            La empresa brinda servicios de construcción civil y montaje de nuevas obras, edificaciones e instalaciones.
+            Fabrica y comercializa artículos de madera. Brinda servicios de diseño de tela, prendas de vestir,
+            calzado, joyas, muebles y otros artículos de decoración interior y de moda, así como otros efectos
+            personales y aseres domésticos. Elabora y comercializa productos de panadería. Servicio móvil de
+            comida. Servicio de transporte de personal por vía terrestre. Servicios de mantenimiento y reparación
+            de vehículos automotores, incluidos los servicios de ponchera y limpieza de los mismos.
+        </p>
+    </div>
+
+    <div class="seccion-servicios">
+        <div class="servicios-container">
+            <h2 class="servicios-titulo">SERVICIOS</h2>
+            <div class="servicios-grid">
+                <div class="servicio-card">
+                    <img src="/static/Imagenes/construccion.png" alt="Construcción" class="servicio-imagen">
+                    <h3 class="servicio-nombre">CONSTRUCCIÓN</h3>
+                    <p class="servicio-descripcion">Construcción de viviendas, edificios e instalaciones, así como la fabricación de muebles y otros artículos de decoración de interiores.</p>
+                </div>
+                <div class="servicio-card">
+                    <img src="/static/Imagenes/alimentos.png" alt="Productos" class="servicio-imagen">
+                    <h3 class="servicio-nombre">PRODUCTOS</h3>
+                    <p class="servicio-descripcion">Comercialización de productos comestibles y servicio móvil de comida.</p>
+                </div>
+                <div class="servicio-card">
+                    <img src="/static/Imagenes/textileria.png" alt="Textilería" class="servicio-imagen">
+                    <h3 class="servicio-nombre">TEXTILERÍA</h3>
+                    <p class="servicio-descripcion">Confección de prendas de vestir, calzado y joyas y otros efectos personales y enseres domésticos.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL LOGIN ============ -->
+    <div class="modal-auth" id="modalLogin">
+        <div class="modal-auth-contenido">
+            <div class="modal-auth-header">
+                <h2><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</h2>
+                <button class="modal-auth-cerrar" id="cerrarLogin">&times;</button>
+            </div>
+            <div class="modal-auth-body">
+                <form id="loginForm">
+                    <div class="form-group"><label>Gmail</label><input type="email" id="loginEmail" placeholder="correo@gmail.com" required></div>
+                    <div class="form-group"><label>Contraseña</label><input type="password" id="loginPassword" placeholder="••••••••" required></div>
+                    <button type="submit" class="btn-auth-submit">Iniciar Sesión</button>
+                    <p class="auth-link">¿No tienes cuenta? <a href="#" id="irARegistro">Regístrate aquí</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ MODAL REGISTRO ============ -->
+    <div class="modal-auth" id="modalRegister">
+        <div class="modal-auth-contenido">
+            <div class="modal-auth-header">
+                <h2><i class="fas fa-user-plus"></i> Registrarse</h2>
+                <button class="modal-auth-cerrar" id="cerrarRegister">&times;</button>
+            </div>
+            <div class="modal-auth-body">
+                <form id="registerForm">
+                    <div class="form-row">
+                        <div class="form-group"><label>Nombre</label><input type="text" id="regName" placeholder="Nombre" required></div>
+                        <div class="form-group"><label>Apellidos</label><input type="text" id="regLastName" placeholder="Apellidos" required></div>
+                    </div>
+                    <div class="form-group"><label>Gmail</label><input type="email" id="regEmail" placeholder="correo@gmail.com" required></div>
+                    <div class="form-group"><label>Usuario</label><input type="text" id="regUsername" placeholder="Nombre de usuario" required></div>
+                    <div class="form-group"><label>Contraseña</label><input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required minlength="6"></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Teléfono</label><input type="tel" id="regPhone" placeholder="+53 5XXX XXXX"></div>
+                        <div class="form-group"><label>Dirección</label><input type="text" id="regAddress" placeholder="Dirección"></div>
+                    </div>
+                    <button type="submit" class="btn-auth-submit">Registrarse</button>
+                    <p class="auth-link">¿Ya tienes cuenta? <a href="#" id="irALogin">Inicia sesión aquí</a></p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modalCatalogo">
+        <div class="modal-contenido">
+            <div class="modal-header"><h2 id="modalTitulo"><i class="fas fa-shopping-cart" style="margin-right: 12px;"></i> PRODUCTOS</h2><button class="modal-cerrar" id="cerrarModal">&times;</button></div>
+            <div class="modal-body" id="modalBody"><p>Cargando productos...</p></div>
+        </div>
+    </div>
+
+    <footer class="footer-unificado">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3 class="footer-logo">ALBOR <span>CONDE</span></h3>
+                <p>Microempresa privada dedicada a la construcción, fabricación de muebles, moda, panadería y comercio online.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="/catalogo.html">Catálogo</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/perfil.html">Mi Perfil</a></li>
+                    <li><a href="/historial-pedidos.html">Mis Pedidos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Líneas de Negocio</h4>
+                <ul>
+                    <li><a href="/catalogo.html?cat=construccion">Construcción</a></li>
+                    <li><a href="/catalogo.html?cat=productos">Productos</a></li>
+                    <li><a href="/catalogo.html?cat=textileria">Textilería</a></li>
+                    <li><a href="/catalogo.html">Muebles y Decoración</a></li>
+                    <li><a href="/catalogo.html">Comercio Online</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i> Baracoa, Guantánamo, Cuba</li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+5356620861">+53 5 662 0861</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:laboriloresyilian@gmail.com">laboriloresyilian@gmail.com</a></li>
+                    <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <p>&copy; 2025 ALBOR CONDE. Todos los derechos reservados.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Términos y Condiciones</a>
+                    <a href="#">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ============================================================
+        // CONFIGURACIÓN DE Z-INDEX PARA SweetAlert
+        // ============================================================
+        const styleSweet = document.createElement('style');
+        styleSweet.textContent = `
+            .swal2-container { z-index: 99999999 !important; }
+            .swal2-popup { z-index: 99999999 !important; }
+            .swal2-backdrop { z-index: 99999998 !important; }
+        `;
+        document.head.appendChild(styleSweet);
+
+        // ============================================================
+        // FUNCIONES DEL CARRITO
+        // ============================================================
+        function getCart() { const cart = localStorage.getItem('cart'); return cart ? JSON.parse(cart) : []; }
+        function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); }
+        function getCartItemCount() { const cart = getCart(); return cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); }
+        function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
+
+        // ============================================================
+        // ADD TO CART - CORREGIDO (precio como número)
+        // ============================================================
+        function addToCart(productId, nombre, precio, imagen) {
+            const cart = getCart();
+            const existingItem = cart.find(item => item.id === productId);
+            
+            // Asegurar que el precio sea un número
+            let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
+            
+            if (existingItem) {
+                existingItem.cantidad = (existingItem.cantidad || 0) + 1;
+            } else {
+                cart.push({ 
+                    id: productId, 
+                    nombre: nombre, 
+                    precio: precioLimpio, 
+                    imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', 
+                    cantidad: 1 
+                });
+            }
+            saveCart(cart);
+            actualizarBadgeCarrito();
+            Swal.fire({ 
+                icon: 'success', 
+                title: '¡Agregado!', 
+                text: nombre + ' agregado al carrito.', 
+                background: '#1a1a1a', 
+                color: '#ffffff', 
+                timer: 1500, 
+                showConfirmButton: false 
+            });
+        }
+
+        // ============================================================
+        // PRODUCTOS DESDE LA API
+        // ============================================================
+        let productosDesdeAPI = [];
+
+        async function cargarProductosAPI() {
+            try {
+                const response = await fetch('/api/productos/');
+                productosDesdeAPI = await response.json();
+            } catch (error) {
+                console.error('Error al cargar productos:', error);
+                productosDesdeAPI = [];
+            }
+        }
+
+        // ============================================================
+        // ABRIR MODAL DE CATÁLOGO CON PRODUCTOS REALES
+        // ============================================================
+        const modal = document.getElementById('modalCatalogo');
+        const modalTitulo = document.getElementById('modalTitulo');
+        const modalBody = document.getElementById('modalBody');
+        const cerrarModal = document.getElementById('cerrarModal');
+
+        async function abrirModal(categoria) {
+            await cargarProductosAPI();
+            
+            const nombresCategoria = { 
+                'construccion': 'Construcción', 
+                'productos': 'Productos', 
+                'textileria': 'Textilería' 
+            };
+            const categoriaReal = nombresCategoria[categoria] || categoria;
+            
+            const productos = productosDesdeAPI.filter(p => p.categoria === categoriaReal);
+            
+            if (productos.length === 0) {
+                modalBody.innerHTML = `<p style="color:var(--gray-text); text-align:center; padding:20px;">No hay productos disponibles en esta categoría.</p>`;
+                return;
+            }
+            
+            const nombresCategoriaTitulo = { 
+                'construccion': 'CONSTRUCCIÓN', 
+                'productos': 'PRODUCTOS', 
+                'textileria': 'TEXTILERÍA' 
+            };
+            modalTitulo.textContent = nombresCategoriaTitulo[categoria] || 'PRODUCTOS';
+            
+            let html = '';
+            productos.forEach(producto => {
+                html += `<div class="producto-item">
+                    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer;">
+                    <div class="producto-info">
+                        <h4 onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer; color:#c9a84c;">${producto.nombre}</h4>
+                        <p>${producto.descripcion || ''}</p>
+                    </div>
+                    <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
+                    <div style="display:flex; flex-direction:column; gap:5px;">
+                        <button class="btn-carrito" onclick="addToCart(${producto.id}, '${producto.nombre}', ${producto.precio}, '${producto.imagen}')"><i class="fas fa-shopping-cart"></i> Agregar</button>
+                        <button class="btn-ver-detalle" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">Ver detalle</button>
+                    </div>
+                </div>`;
+            });
+            modalBody.innerHTML = html;
+            modal.classList.add('mostrar');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarModalFunc() { modal.classList.remove('mostrar'); document.body.style.overflow = 'auto'; }
+        cerrarModal.addEventListener('click', cerrarModalFunc);
+        modal.addEventListener('click', function(event) { if (event.target === modal) { cerrarModalFunc(); } });
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape' && modal.classList.contains('mostrar')) { cerrarModalFunc(); } });
+        
+        document.querySelectorAll('.servicio-card').forEach(function(card, index) {
+            card.addEventListener('click', function() { 
+                const categorias = ['construccion', 'productos', 'textileria']; 
+                abrirModal(categorias[index]); 
+            });
+        });
+
+        // ============================================================
+        // NAVBAR
+        // ============================================================
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.navbar-links');
+        const navActions = document.querySelector('.navbar-actions');
+        if (navToggle) { navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); navActions.classList.toggle('open'); const icon = this.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }); }
+        document.querySelectorAll('.navbar-links a').forEach(link => { link.addEventListener('click', function() { if (window.innerWidth <= 768) { navLinks.classList.remove('open'); navActions.classList.remove('open'); const icon = navToggle.querySelector('i'); icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); } }); });
+
+        const btnLogin = document.getElementById('navBtnLogin');
+        const btnRegister = document.getElementById('navBtnRegister');
+        const btnLogout = document.getElementById('navLogout');
+        const modalLogin = document.getElementById('modalLogin');
+        const modalRegister = document.getElementById('modalRegister');
+        const cerrarLogin = document.getElementById('cerrarLogin');
+        const cerrarRegister = document.getElementById('cerrarRegister');
+        const irARegistro = document.getElementById('irARegistro');
+        const irALogin = document.getElementById('irALogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+
+        // ============================================================
+        // LOGIN
+        // ============================================================
+        btnLogin.addEventListener('click', function() { modalLogin.classList.add('mostrar'); });
+        btnRegister.addEventListener('click', function() { modalRegister.classList.add('mostrar'); });
+
+        // ============================================================
+        // REGISTRAR USUARIO - CON CSRF
+        // ============================================================
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const lastName = document.getElementById('regLastName') ? document.getElementById('regLastName').value.trim() : '';
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const phone = document.getElementById('regPhone').value.trim();
+            const address = document.getElementById('regAddress').value.trim();
+            if (!name || !email || !password) {
+                Swal.fire({ icon: 'warning', title: 'Campos obligatorios', text: 'Por favor, completa todos los campos obligatorios.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                return;
+            }
+            
+            const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+            
+            try {
+                const response = await fetch('/api/registro/', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ nombre: name + (lastName ? ' ' + lastName : ''), email: email, password: password, telefono: phone, direccion: address })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    Swal.fire({ icon: 'success', title: '¡Registro exitoso!', text: 'Ahora puedes iniciar sesión.', background: '#1a1a1a', color: '#ffffff', timer: 2000, showConfirmButton: false });
+                    modalRegister.classList.remove('mostrar');
+                    modalLogin.classList.add('mostrar');
+                    registerForm.reset();
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error al registrarse', text: data.error || 'Ocurrió un problema.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+            }
+        });
+
+        // ============================================================
+        // LOGIN - CON CSRF
+        // ============================================================
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            if (!email || !password) {
+                Swal.fire({ icon: 'warning', title: 'Campos vacíos', text: 'Por favor, ingresa tu Gmail y contraseña.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                return;
+            }
+            
+            const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+            
+            try {
+                const response = await fetch('/api/login/', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ email: email, password: password })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('currentUser', JSON.stringify(data));
+                    modalLogin.classList.remove('mostrar');
+                    loginForm.reset();
+                    actualizarUI();
+                    Swal.fire({ icon: 'success', title: '¡Bienvenido, ' + data.nombre + '!', text: 'Has iniciado sesión correctamente.', background: '#1a1a1a', color: '#ffffff', timer: 2000, showConfirmButton: false });
+                    setTimeout(function() {
+                        if (data.role === 'admin') { window.location.href = '/admin.html'; } 
+                        else { window.location.href = '/index.html'; }
+                    }, 1500);
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Credenciales incorrectas', text: data.error || 'Gmail o contraseña incorrectos.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+            }
+        });
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        function logout() {
+            Swal.fire({ title: '¿Cerrar sesión?', text: '¿Estás seguro de que quieres salir?', icon: 'question', background: '#1a1a1a', color: '#ffffff', showCancelButton: true, confirmButtonColor: '#c9a84c', cancelButtonColor: '#ff6b6b', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar' }).then((result) => {
+                if (result.isConfirmed) { localStorage.removeItem('currentUser'); actualizarUI(); Swal.fire({ icon: 'info', title: 'Sesión cerrada', text: 'Has cerrado sesión correctamente.', background: '#1a1a1a', color: '#ffffff', timer: 1500, showConfirmButton: false }); }
+            });
+        }
+
+        if (btnLogout) { btnLogout.addEventListener('click', logout); }
+
+        // ============================================================
+        // CERRAR MODALES
+        // ============================================================
+        if (cerrarLogin) { cerrarLogin.addEventListener('click', function() { modalLogin.classList.remove('mostrar'); }); }
+        if (cerrarRegister) { cerrarRegister.addEventListener('click', function() { modalRegister.classList.remove('mostrar'); }); }
+        modalLogin.addEventListener('click', function(e) { if (e.target === modalLogin) modalLogin.classList.remove('mostrar'); });
+        modalRegister.addEventListener('click', function(e) { if (e.target === modalRegister) modalRegister.classList.remove('mostrar'); });
+        if (irARegistro) { irARegistro.addEventListener('click', function(e) { e.preventDefault(); modalLogin.classList.remove('mostrar'); modalRegister.classList.add('mostrar'); }); }
+        if (irALogin) { irALogin.addEventListener('click', function(e) { e.preventDefault(); modalRegister.classList.remove('mostrar'); modalLogin.classList.add('mostrar'); }); }
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { modalLogin.classList.remove('mostrar'); modalRegister.classList.remove('mostrar'); } });
+
+        // ============================================================
+        // ACTUALIZAR UI
+        // ============================================================
+        function actualizarUI() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navProfile = document.getElementById('navProfile');
+            const navAuth = document.getElementById('navAuth');
+            const navUserName = document.getElementById('navUserName');
+            const navAdminLink = document.getElementById('navAdminLink');
+            const navCartBadge = document.getElementById('navCartBadge');
+
+            if (user) {
+                if (btnLogin) btnLogin.style.display = 'none';
+                if (btnRegister) btnRegister.style.display = 'none';
+                if (navProfile) navProfile.style.display = 'flex';
+                if (navAuth) navAuth.style.display = 'none';
+                if (navUserName) navUserName.textContent = user.nombre || 'Usuario';
+                if (navAdminLink) navAdminLink.style.display = user.role === 'admin' ? 'inline-flex' : 'none';
+            } else {
+                if (btnLogin) btnLogin.style.display = 'inline-block';
+                if (btnRegister) btnRegister.style.display = 'inline-block';
+                if (navProfile) navProfile.style.display = 'none';
+                if (navAuth) navAuth.style.display = 'flex';
+            }
+
+            if (navCartBadge) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+                navCartBadge.textContent = totalItems;
+                navCartBadge.style.display = totalItems > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        function actualizarNavbar() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navProfile = document.getElementById('navProfile');
+            const navAuth = document.getElementById('navAuth');
+            const navUserName = document.getElementById('navUserName');
+            const navAdminLink = document.getElementById('navAdminLink');
+            const navCartBadge = document.getElementById('navCartBadge');
+            if (user) {
+                if (navProfile) navProfile.style.display = 'flex';
+                if (navAuth) navAuth.style.display = 'none';
+                if (navUserName) navUserName.textContent = user.nombre || 'Usuario';
+                if (navAdminLink) navAdminLink.style.display = user.role === 'admin' ? 'inline-flex' : 'none';
+            } else {
+                if (navProfile) navProfile.style.display = 'none';
+                if (navAuth) navAuth.style.display = 'flex';
+            }
+            if (navCartBadge) {
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 0), 0);
+                navCartBadge.textContent = totalItems;
+                navCartBadge.style.display = totalItems > 0 ? 'inline-block' : 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() { actualizarUI(); actualizarNavbar(); });
+    </script>
+</body>
+</html>

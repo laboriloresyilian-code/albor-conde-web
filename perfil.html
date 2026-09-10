@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - ALBOR CONDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #000000; --black-soft: #0a0a0a; --gray-dark: #1a1a1a; --gray-medium: #2a2a2a;
+            --gray-text: #888888; --gray-light: #cccccc; --white: #ffffff; --gold: #c9a84c;
+            --gold-light: #d4b85a; --gold-dark: #a8893a; --red: #ff6b6b; --green: #6bcb77;
+        }
+        body { font-family: 'Inter', Arial, sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
+        
+        .navbar-unificado { background: rgba(0,0,0,0.92); padding: 12px 40px; border-bottom: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; }
+        .navbar-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .navbar-logo .logo-text span { color: var(--white); }
+        .navbar-logo .logo-badge { font-family: 'Inter', Arial, sans-serif; font-size: 0.5rem; font-weight: 600; padding: 2px 10px; background: rgba(201,168,76,0.15); color: var(--gold); border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; }
+        .navbar-links { display: flex; gap: 30px; list-style: none; }
+        .navbar-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.3s; }
+        .navbar-links a:hover, .navbar-links a.active { color: var(--gold); }
+        .navbar-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-profile { display: flex; align-items: center; gap: 8px; }
+        .nav-icon { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', Arial, sans-serif; }
+        .nav-icon:hover { color: var(--gold); }
+        .nav-icon i { font-size: 1.1rem; }
+        .nav-icon .admin-link { color: var(--gold); }
+        .nav-auth { display: flex; gap: 8px; }
+        .btn-nav { padding: 8px 18px; border-radius: 25px; font-family: 'Inter', Arial, sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--white); }
+        .btn-nav:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .btn-nav-register { background: var(--gold); border-color: var(--gold); color: var(--black); }
+        .btn-nav-register:hover { background: var(--gold-light); border-color: var(--gold-light); }
+        .nav-cart { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 1.2rem; transition: color 0.3s; position: relative; display: flex; align-items: center; }
+        .nav-cart:hover { color: var(--gold); }
+        .nav-cart .cart-badge { position: absolute; top: -8px; right: -12px; background: var(--gold); color: var(--black); border-radius: 50%; padding: 2px 7px; font-size: 0.6rem; font-weight: 700; display: none; }
+        .nav-toggle { display: none; background: transparent; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+
+        .profile-container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        .profile-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--white); margin-bottom: 10px; }
+        .profile-title i { color: var(--gold); margin-right: 12px; }
+        .profile-subtitle { color: var(--gray-text); font-size: 0.95rem; margin-bottom: 30px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 30px; }
+        .profile-sidebar { background: var(--gray-dark); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); padding: 30px; text-align: center; align-self: flex-start; }
+        .profile-avatar { width: 100px; height: 100px; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 3rem; color: var(--black); }
+        .profile-avatar i { font-size: 3.5rem; }
+        .profile-sidebar .profile-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--white); }
+        .profile-sidebar .profile-email { color: var(--gray-text); font-size: 0.85rem; margin-bottom: 5px; }
+        .profile-sidebar .profile-role { display: inline-block; padding: 4px 14px; background: rgba(201,168,76,0.1); color: var(--gold); border-radius: 50px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .profile-sidebar .profile-member-since { font-size: 0.75rem; color: var(--gray-text); margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.03); }
+        .profile-sidebar .profile-menu { list-style: none; margin-top: 20px; text-align: left; }
+        .profile-sidebar .profile-menu li { margin-bottom: 4px; }
+        .profile-sidebar .profile-menu li a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; color: var(--gray-text); text-decoration: none; border-radius: 8px; font-size: 0.85rem; transition: all 0.3s ease; }
+        .profile-sidebar .profile-menu li a:hover { background: rgba(255,255,255,0.02); color: var(--white); }
+        .profile-sidebar .profile-menu li a.active { background: rgba(201,168,76,0.05); color: var(--gold); }
+        .profile-sidebar .profile-menu li a i { width: 20px; text-align: center; }
+        .profile-content { background: var(--gray-dark); border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); padding: 30px; }
+        .profile-content .section-title { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--white); margin-bottom: 5px; }
+        .profile-content .section-subtitle { color: var(--gray-text); font-size: 0.85rem; margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--gray-text); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input { width: 100%; padding: 12px 16px; background: var(--black-soft); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; font-family: 'Inter', Arial, sans-serif; font-size: 0.95rem; color: var(--white); transition: border 0.3s; outline: none; }
+        .form-group input:focus { border-color: var(--gold); }
+        .form-group input:disabled { opacity: 0.5; cursor: not-allowed; }
+        .form-group input::placeholder { color: #444444; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn-save { padding: 12px 30px; background: var(--gold); color: var(--black); border: none; border-radius: 50px; font-size: 0.9rem; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-save:hover { background: var(--gold-light); transform: translateY(-2px); }
+        .btn-save-secondary { background: transparent; color: var(--gray-text); border: 1px solid rgba(255,255,255,0.05); padding: 12px 30px; border-radius: 50px; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-save-secondary:hover { border-color: rgba(255,255,255,0.15); color: var(--white); }
+        .form-actions { display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap; }
+        .error-message { color: var(--red); font-size: 0.8rem; margin-top: 4px; display: none; }
+        .error-message.show { display: block; }
+
+        .footer-unificado { background: var(--black-soft); border-top: 1px solid rgba(255,255,255,0.03); padding: 60px 40px 0; margin-top: 40px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .footer-col h3, .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--white); margin-bottom: 15px; }
+        .footer-col h3 { font-size: 1.3rem; }
+        .footer-col h3 span { color: var(--gold); }
+        .footer-col p { color: var(--gray-text); font-size: 0.9rem; line-height: 1.6; max-width: 300px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col ul li a { color: var(--gray-text); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: var(--gold); }
+        .footer-col .footer-contact li { color: var(--gray-text); font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+        .footer-col .footer-contact li i { color: var(--gold); width: 18px; }
+        .footer-social { display: flex; gap: 12px; margin-top: 15px; }
+        .footer-social a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.03); color: var(--gray-text); transition: all 0.3s ease; text-decoration: none; }
+        .footer-social a:hover { background: var(--gold); color: var(--black); }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 20px 0; }
+        .footer-bottom-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .footer-bottom p { color: var(--gray-text); font-size: 0.8rem; }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
+        .footer-bottom-links a:hover { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .profile-grid { grid-template-columns: 1fr; }
+            .profile-title { font-size: 1.8rem; }
+            .form-row { grid-template-columns: 1fr; }
+            .profile-sidebar { text-align: center; }
+            .profile-sidebar .profile-menu li a { justify-content: center; }
+            .form-actions { flex-direction: column; }
+            .btn-save, .btn-save-secondary { width: 100%; justify-content: center; }
+            .navbar-unificado { padding: 10px 20px; }
+            .navbar-links { display: none; flex-direction: column; width: 100%; padding: 20px 0; gap: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); margin-top: 12px; }
+            .navbar-links.open { display: flex; }
+            .navbar-actions { display: none; }
+            .navbar-actions.open { display: flex; flex-direction: column; width: 100%; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); }
+            .nav-toggle { display: block; }
+            .footer-container { grid-template-columns: 1fr; gap: 30px; padding: 30px 0; }
+            .footer-unificado { padding: 40px 20px 0; }
+            .footer-bottom-container { flex-direction: column; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .profile-container { padding: 0 15px; }
+            .profile-content { padding: 20px; }
+            .profile-sidebar { padding: 20px; }
+            .navbar-logo { font-size: 1rem; }
+            .navbar-logo .logo-badge { display: none; }
+            .footer-col p { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-unificado">
+        <div class="navbar-container">
+            <a href="/index.html" class="navbar-logo"><span class="logo-text">ALBOR <span>CONDE</span></span><span class="logo-badge">MIPYME</span></a>
+            <ul class="navbar-links">
+                <li><a href="/index.html" id="navInicio">Inicio</a></li>
+                <li><a href="/catalogo.html" id="navCatalogo">Catálogo</a></li>
+                <li><a href="/contacto.html" id="navContacto">Contacto</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="nav-profile" id="navProfile" style="display:none;">
+                    <a href="/perfil.html" class="nav-icon" title="Mi Perfil"><i class="fas fa-user-circle"></i><span id="navUserName">Usuario</span></a>
+                    <a href="/historial-pedidos.html" class="nav-icon" title="Mis Pedidos"><i class="fas fa-box"></i></a>
+                    <a href="/admin.html" id="navAdminLink" class="nav-icon admin-link" style="display:none;" title="Panel Admin"><i class="fas fa-cog"></i></a>
+                    <button class="nav-icon" id="navLogout" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+                <div class="nav-auth" id="navAuth">
+                    <button class="btn-nav" id="navBtnLogin">Iniciar Sesión</button>
+                    <button class="btn-nav btn-nav-register" id="navBtnRegister">Registrarse</button>
+                </div>
+                <a href="/carrito.html" class="nav-cart" title="Carrito"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="navCartBadge">0</span></a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menú"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <h1 class="profile-title"><i class="fas fa-user-circle"></i> Mi Perfil</h1>
+        <p class="profile-subtitle">Gestiona tu información personal y preferencias</p>
+        <div class="profile-grid">
+            <aside class="profile-sidebar" id="profileSidebar">
+                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                <div class="profile-name" id="profileName">Usuario</div>
+                <div class="profile-email" id="profileEmail">usuario@correo.com</div>
+                <span class="profile-role" id="profileRole">Cliente</span>
+                <div class="profile-member-since" id="profileSince">Miembro desde: --/--/----</div>
+                <ul class="profile-menu">
+                    <li><a href="#" class="active" data-section="datos"><i class="fas fa-user-edit"></i> Mis Datos</a></li>
+                    <li><a href="#" data-section="password"><i class="fas fa-lock"></i> Cambiar Contraseña</a></li>
+                    <li><a href="/historial-pedidos.html" data-section="pedidos"><i class="fas fa-box"></i> Historial de Pedidos</a></li>
+                    <li><a href="#" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
+                </ul>
+            </aside>
+            <div class="profile-content" id="profileContent">
+                <div id="sectionDatos">
+                    <h2 class="section-title"><i class="fas fa-user-edit" style="color:var(--gold); margin-right:10px;"></i> Mis Datos</h2>
+                    <p class="section-subtitle">Actualiza tu información personal</p>
+                    <form id="profileForm">
+                        <div class="form-group"><label>Nombre Completo</label><input type="text" id="editName" placeholder="Tu nombre completo"></div>
+                        <div class="form-group"><label>Gmail</label><input type="email" id="editEmail" placeholder="correo@gmail.com" disabled></div>
+                        <div class="form-row">
+                            <div class="form-group"><label>Teléfono</label><input type="tel" id="editPhone" placeholder="+53 5XXX XXXX"></div>
+                            <div class="form-group"><label>Dirección</label><input type="text" id="editAddress" placeholder="Tu dirección"></div>
+                        </div>
+                        <div class="form-actions"><button type="submit" class="btn-save"><i class="fas fa-save"></i> Guardar Cambios</button></div>
+                    </form>
+                </div>
+                <div id="sectionPassword" style="display:none;">
+                    <h2 class="section-title"><i class="fas fa-lock" style="color:var(--gold); margin-right:10px;"></i> Cambiar Contraseña</h2>
+                    <p class="section-subtitle">Actualiza tu contraseña de acceso</p>
+                    <form id="passwordForm">
+                        <div class="form-group"><label>Contraseña Actual</label><input type="password" id="currentPassword" placeholder="Ingresa tu contraseña actual" required></div>
+                        <div class="form-group"><label>Nueva Contraseña</label><input type="password" id="newPassword" placeholder="Mínimo 6 caracteres" required minlength="6"><div class="error-message" id="passwordError">La contraseña debe tener al menos 6 caracteres.</div></div>
+                        <div class="form-group"><label>Confirmar Nueva Contraseña</label><input type="password" id="confirmPassword" placeholder="Confirma tu nueva contraseña" required><div class="error-message" id="confirmError">Las contraseñas no coinciden.</div></div>
+                        <div class="form-actions"><button type="submit" class="btn-save"><i class="fas fa-save"></i> Cambiar Contraseña</button><button type="button" class="btn-save-secondary" onclick="mostrarSeccion('datos')"><i class="fas fa-arrow-left"></i> Volver</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-unificado">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3 class="footer-logo">ALBOR <span>CONDE</span></h3>
+                <p>Microempresa privada dedicada a la construcción, fabricación de muebles, moda, panadería y comercio online.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="/catalogo.html">Catálogo</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/perfil.html">Mi Perfil</a></li>
+                    <li><a href="/historial-pedidos.html">Mis Pedidos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Líneas de Negocio</h4>
+                <ul>
+                    <li><a href="/catalogo.html?cat=construccion">Construcción</a></li>
+                    <li><a href="/catalogo.html?cat=productos">Productos</a></li>
+                    <li><a href="/catalogo.html?cat=textileria">Textilería</a></li>
+                    <li><a href="/catalogo.html">Muebles y Decoración</a></li>
+                    <li><a href="/catalogo.html">Comercio Online</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i> Baracoa, Guantánamo, Cuba</li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+5356620861">+53 5 662 0861</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:laboriloresyilian@gmail.com">laboriloresyilian@gmail.com</a></li>
+                    <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <p>&copy; 2025 ALBOR CONDE. Todos los derechos reservados.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Términos y Condiciones</a>
+                    <a href="#">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function getCurrentUser() { const user = localStorage.getItem('currentUser'); return user ? JSON.parse(user) : null; }
+        function getUsers() { const users = localStorage.getItem('users'); return users ? JSON.parse(users) : []; }
+        function saveUsers(users) { localStorage.setItem('users', JSON.stringify(users)); }
+        function cargarPerfil() {
+            const user = getCurrentUser();
+            if (!user) { window.location.href = '/index.html'; return; }
+            document.getElementById('profileName').textContent = user.name || 'Usuario';
+            document.getElementById('profileEmail').textContent = user.email || 'usuario@correo.com';
+            document.getElementById('profileRole').textContent = user.role === 'admin' ? 'Administrador' : 'Cliente';
+            if (user.createdAt) { const date = new Date(user.createdAt); const dateStr = date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }); document.getElementById('profileSince').textContent = 'Miembro desde: ' + dateStr; }
+            document.getElementById('editName').value = user.name || '';
+            document.getElementById('editEmail').value = user.email || '';
+            document.getElementById('editPhone').value = user.phone || '';
+            document.getElementById('editAddress').value = user.address || '';
+        }
+        document.getElementById('profileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            if (!user) return;
+            const name = document.getElementById('editName').value.trim();
+            const phone = document.getElementById('editPhone').value.trim();
+            const address = document.getElementById('editAddress').value.trim();
+            if (!name) { Swal.fire({ icon: 'warning', title: 'Campo obligatorio', text: 'El nombre es obligatorio.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' }); return; }
+            let users = getUsers();
+            const userIndex = users.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                users[userIndex].name = name; users[userIndex].phone = phone; users[userIndex].address = address;
+                saveUsers(users);
+                const updatedUser = users[userIndex];
+                localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                document.getElementById('profileName').textContent = updatedUser.name;
+                Swal.fire({ icon: 'success', title: '¡Datos actualizados!', text: 'Tu información se ha guardado correctamente.', background: '#1a1a1a', color: '#ffffff', timer: 2000, showConfirmButton: false });
+                cargarPerfil();
+            }
+        });
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = getCurrentUser();
+            if (!user) return;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            if (currentPassword !== user.password) { Swal.fire({ icon: 'error', title: 'Contraseña incorrecta', text: 'La contraseña actual no es correcta.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' }); return; }
+            if (newPassword.length < 6) { document.getElementById('passwordError').classList.add('show'); return; } else { document.getElementById('passwordError').classList.remove('show'); }
+            if (newPassword !== confirmPassword) { document.getElementById('confirmError').classList.add('show'); return; } else { document.getElementById('confirmError').classList.remove('show'); }
+            let users = getUsers();
+            const userIndex = users.findIndex(u => u.id === user.id);
+            if (userIndex !== -1) {
+                users[userIndex].password = newPassword; saveUsers(users);
+                const updatedUser = users[userIndex]; localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+                Swal.fire({ icon: 'success', title: '¡Contraseña actualizada!', text: 'Tu contraseña se ha cambiado correctamente.', background: '#1a1a1a', color: '#ffffff', timer: 2000, showConfirmButton: false });
+                document.getElementById('passwordForm').reset();
+                document.getElementById('confirmError').classList.remove('show');
+                document.getElementById('passwordError').classList.remove('show');
+            }
+        });
+        function mostrarSeccion(seccion) {
+            const sectionDatos = document.getElementById('sectionDatos');
+            const sectionPassword = document.getElementById('sectionPassword');
+            document.querySelectorAll('.profile-menu a').forEach(link => link.classList.remove('active'));
+            if (seccion === 'datos') { sectionDatos.style.display = 'block'; sectionPassword.style.display = 'none'; document.querySelector('.profile-menu a[data-section="datos"]').classList.add('active'); }
+            else if (seccion === 'password') { sectionDatos.style.display = 'none'; sectionPassword.style.display = 'block'; document.querySelector('.profile-menu a[data-section="password"]').classList.add('active'); }
+        }
+        document.querySelectorAll('.profile-menu a[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const section = this.dataset.section;
+                if (section === 'pedidos') { window.location.href = '/historial-pedidos.html'; return; }
+                mostrarSeccion(section);
+            });
+        });
+        document.getElementById('logoutLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            Swal.fire({ title: '¿Cerrar sesión?', text: '¿Estás seguro de que quieres salir?', icon: 'question', background: '#1a1a1a', color: '#ffffff', showCancelButton: true, confirmButtonColor: '#c9a84c', cancelButtonColor: '#ff6b6b', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar' }).then((result) => {
+                if (result.isConfirmed) { localStorage.removeItem('currentUser'); window.location.href = '/index.html'; }
+            });
+        });
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.navbar-links');
+        const navActions = document.querySelector('.navbar-actions');
+        if (navToggle) { navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); navActions.classList.toggle('open'); const icon = this.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }); }
+        document.querySelectorAll('.navbar-links a').forEach(link => { link.addEventListener('click', function() { if (window.innerWidth <= 768) { navLinks.classList.remove('open'); navActions.classList.remove('open'); const icon = navToggle.querySelector('i'); icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); } }); });
+        function actualizarNavbar() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navProfile = document.getElementById('navProfile');
+            const navAuth = document.getElementById('navAuth');
+            const navUserName = document.getElementById('navUserName');
+            const navAdminLink = document.getElementById('navAdminLink');
+            const navCartBadge = document.getElementById('navCartBadge');
+            if (user) { if (navProfile) navProfile.style.display = 'flex'; if (navAuth) navAuth.style.display = 'none'; if (navUserName) navUserName.textContent = user.name || 'Usuario'; if (navAdminLink) navAdminLink.style.display = user.role === 'admin' ? 'inline-flex' : 'none'; }
+            else { if (navProfile) navProfile.style.display = 'none'; if (navAuth) navAuth.style.display = 'flex'; }
+            if (navCartBadge) { const cart = JSON.parse(localStorage.getItem('cart') || '[]'); const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); navCartBadge.textContent = totalItems; navCartBadge.style.display = totalItems > 0 ? 'inline-block' : 'none'; }
+        }
+        document.getElementById('navLogout')?.addEventListener('click', function() {
+            Swal.fire({ title: '¿Cerrar sesión?', text: '¿Estás seguro de que quieres salir?', icon: 'question', background: '#1a1a1a', color: '#ffffff', showCancelButton: true, confirmButtonColor: '#c9a84c', cancelButtonColor: '#ff6b6b', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar' }).then((result) => { if (result.isConfirmed) { localStorage.removeItem('currentUser'); window.location.href = '/index.html'; } });
+        });
+        document.getElementById('navBtnLogin')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+        document.getElementById('navBtnRegister')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+        document.addEventListener('DOMContentLoaded', function() { cargarPerfil(); actualizarNavbar(); });
+    </script>
+</body>
+</html>

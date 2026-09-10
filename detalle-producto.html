@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle - ALBOR CONDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #000000; --black-soft: #0a0a0a; --gray-dark: #1a1a1a; --gray-medium: #2a2a2a;
+            --gray-text: #888888; --gray-light: #cccccc; --white: #ffffff; --gold: #c9a84c;
+            --gold-light: #d4b85a; --gold-dark: #a8893a; --red: #ff6b6b; --green: #6bcb77;
+        }
+        body { font-family: 'Inter', Arial, sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
+        
+        .navbar-unificado { background: rgba(0,0,0,0.92); padding: 12px 40px; border-bottom: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; }
+        .navbar-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .navbar-logo .logo-text span { color: var(--white); }
+        .navbar-logo .logo-badge { font-family: 'Inter', Arial, sans-serif; font-size: 0.5rem; font-weight: 600; padding: 2px 10px; background: rgba(201,168,76,0.15); color: var(--gold); border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; }
+        .navbar-links { display: flex; gap: 30px; list-style: none; }
+        .navbar-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.3s; }
+        .navbar-links a:hover, .navbar-links a.active { color: var(--gold); }
+        .navbar-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-profile { display: flex; align-items: center; gap: 8px; }
+        .nav-icon { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', Arial, sans-serif; }
+        .nav-icon:hover { color: var(--gold); }
+        .nav-icon i { font-size: 1.1rem; }
+        .nav-icon .admin-link { color: var(--gold); }
+        .nav-auth { display: flex; gap: 8px; }
+        .btn-nav { padding: 8px 18px; border-radius: 25px; font-family: 'Inter', Arial, sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--white); }
+        .btn-nav:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .btn-nav-register { background: var(--gold); border-color: var(--gold); color: var(--black); }
+        .btn-nav-register:hover { background: var(--gold-light); border-color: var(--gold-light); }
+        .nav-cart { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 1.2rem; transition: color 0.3s; position: relative; display: flex; align-items: center; }
+        .nav-cart:hover { color: var(--gold); }
+        .nav-cart .cart-badge { position: absolute; top: -8px; right: -12px; background: var(--gold); color: var(--black); border-radius: 50%; padding: 2px 7px; font-size: 0.6rem; font-weight: 700; display: none; }
+        .nav-toggle { display: none; background: transparent; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+
+        .detail-container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; background: rgba(255,255,255,0.02); padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); }
+        .detail-image { width: 100%; height: 400px; object-fit: cover; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .detail-info { display: flex; flex-direction: column; gap: 20px; }
+        .detail-category { display: inline-block; background: rgba(201,168,76,0.1); color: #c9a84c; padding: 4px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; align-self: flex-start; }
+        .detail-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 700; color: #ffffff; }
+        .detail-price { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: #c9a84c; }
+        .detail-description { font-size: 1rem; color: rgba(255,255,255,0.6); line-height: 1.8; }
+        .detail-actions { display: flex; gap: 15px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-add-cart { background: #c9a84c; color: #000000; border: none; padding: 14px 40px; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.3s; display: flex; align-items: center; gap: 10px; }
+        .btn-add-cart:hover { background: #d4b85a; }
+        .btn-back { background: transparent; color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.08); padding: 14px 30px; border-radius: 50px; font-size: 1rem; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+        .btn-back:hover { border-color: rgba(255,255,255,0.2); color: #ffffff; }
+
+        .footer-unificado { background: var(--black-soft); border-top: 1px solid rgba(255,255,255,0.03); padding: 60px 40px 0; margin-top: 40px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .footer-col h3, .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--white); margin-bottom: 15px; }
+        .footer-col h3 { font-size: 1.3rem; }
+        .footer-col h3 span { color: var(--gold); }
+        .footer-col p { color: var(--gray-text); font-size: 0.9rem; line-height: 1.6; max-width: 300px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col ul li a { color: var(--gray-text); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: var(--gold); }
+        .footer-col .footer-contact li { color: var(--gray-text); font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+        .footer-col .footer-contact li i { color: var(--gold); width: 18px; }
+        .footer-social { display: flex; gap: 12px; margin-top: 15px; }
+        .footer-social a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.03); color: var(--gray-text); transition: all 0.3s ease; text-decoration: none; }
+        .footer-social a:hover { background: var(--gold); color: var(--black); }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 20px 0; }
+        .footer-bottom-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .footer-bottom p { color: var(--gray-text); font-size: 0.8rem; }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
+        .footer-bottom-links a:hover { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .detail-grid { grid-template-columns: 1fr; padding: 20px; gap: 30px; }
+            .detail-image { height: 250px; }
+            .detail-title { font-size: 1.8rem; }
+            .detail-price { font-size: 1.5rem; }
+            .detail-actions { flex-direction: column; }
+            .btn-add-cart, .btn-back { width: 100%; justify-content: center; }
+            .navbar-unificado { padding: 10px 20px; }
+            .navbar-links { display: none; flex-direction: column; width: 100%; padding: 20px 0; gap: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); margin-top: 12px; }
+            .navbar-links.open { display: flex; }
+            .navbar-actions { display: none; }
+            .navbar-actions.open { display: flex; flex-direction: column; width: 100%; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); }
+            .nav-toggle { display: block; }
+            .footer-container { grid-template-columns: 1fr; gap: 30px; padding: 30px 0; }
+            .footer-unificado { padding: 40px 20px 0; }
+            .footer-bottom-container { flex-direction: column; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .navbar-logo { font-size: 1rem; }
+            .navbar-logo .logo-badge { display: none; }
+            .footer-col p { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-unificado">
+        <div class="navbar-container">
+            <a href="/index.html" class="navbar-logo"><span class="logo-text">ALBOR <span>CONDE</span></span><span class="logo-badge">MIPYME</span></a>
+            <ul class="navbar-links">
+                <li><a href="/index.html" id="navInicio">Inicio</a></li>
+                <li><a href="/catalogo.html" id="navCatalogo">Catálogo</a></li>
+                <li><a href="/contacto.html" id="navContacto">Contacto</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="nav-profile" id="navProfile" style="display:none;">
+                    <a href="/perfil.html" class="nav-icon" title="Mi Perfil"><i class="fas fa-user-circle"></i><span id="navUserName">Usuario</span></a>
+                    <a href="/historial-pedidos.html" class="nav-icon" title="Mis Pedidos"><i class="fas fa-box"></i></a>
+                    <a href="/admin.html" id="navAdminLink" class="nav-icon admin-link" style="display:none;" title="Panel Admin"><i class="fas fa-cog"></i></a>
+                    <button class="nav-icon" id="navLogout" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+                <div class="nav-auth" id="navAuth">
+                    <button class="btn-nav" id="navBtnLogin">Iniciar Sesión</button>
+                    <button class="btn-nav btn-nav-register" id="navBtnRegister">Registrarse</button>
+                </div>
+                <a href="/carrito.html" class="nav-cart" title="Carrito"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="navCartBadge">0</span></a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menú"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="detail-container">
+        <div class="detail-grid" id="detailContainer"></div>
+    </div>
+
+    <footer class="footer-unificado">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3 class="footer-logo">ALBOR <span>CONDE</span></h3>
+                <p>Microempresa privada dedicada a la construcción, fabricación de muebles, moda, panadería y comercio online.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="/catalogo.html">Catálogo</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/perfil.html">Mi Perfil</a></li>
+                    <li><a href="/historial-pedidos.html">Mis Pedidos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Líneas de Negocio</h4>
+                <ul>
+                    <li><a href="/catalogo.html?cat=construccion">Construcción</a></li>
+                    <li><a href="/catalogo.html?cat=productos">Productos</a></li>
+                    <li><a href="/catalogo.html?cat=textileria">Textilería</a></li>
+                    <li><a href="/catalogo.html">Muebles y Decoración</a></li>
+                    <li><a href="/catalogo.html">Comercio Online</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i> Baracoa, Guantánamo, Cuba</li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+5356620861">+53 5 662 0861</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:laboriloresyilian@gmail.com">laboriloresyilian@gmail.com</a></li>
+                    <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <p>&copy; 2025 ALBOR CONDE. Todos los derechos reservados.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Términos y Condiciones</a>
+                    <a href="#">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function getProductFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            const category = params.get('cat');
+            return { productId, category };
+        }
+
+        async function cargarProductoDetalle() {
+            const { productId, category } = getProductFromURL();
+            const container = document.getElementById('detailContainer');
+
+            if (!productId) {
+                container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto que buscas no existe o la URL es incorrecta.</p><a href="/catalogo.html" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/productos/');
+                const productos = await response.json();
+                const producto = productos.find(p => p.id === parseInt(productId) || p.id === productId);
+
+                if (!producto) {
+                    container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto con ID "${productId}" no existe.</p><a href="/catalogo.html" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <div>
+                        <img src="${producto.imagen}" alt="${producto.nombre}" class="detail-image" onerror="this.src='https://via.placeholder.com/600/808080/FFFFFF?text=Producto'">
+                    </div>
+                    <div class="detail-info">
+                        <span class="detail-category">${producto.categoria}</span>
+                        <h1 class="detail-title">${producto.nombre}</h1>
+                        <p class="detail-description">${producto.descripcion}</p>
+                        <div class="detail-price">$${producto.precio.toFixed(2)}</div>
+                        <div class="detail-actions">
+                            <button class="btn-add-cart" onclick="addToCart('${producto.id}', '${producto.nombre}', ${producto.precio}, '${producto.imagen}')"><i class="fas fa-shopping-cart"></i> Agregar al carrito</button>
+                            <a href="/catalogo.html" class="btn-back"><i class="fas fa-arrow-left"></i> Seguir comprando</a>
+                        </div>
+                    </div>`;
+            } catch (error) {
+                console.error('Error al cargar el producto:', error);
+            }
+        }
+
+        function getCart() { const cart = localStorage.getItem('cart'); return cart ? JSON.parse(cart) : []; }
+        function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); }
+        function getCartItemCount() { const cart = getCart(); return cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); }
+        function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
+
+        function addToCart(productId, nombre, precio, imagen) {
+            const cart = getCart();
+            const existingItem = cart.find(item => item.id === productId);
+            let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
+            if (existingItem) { existingItem.cantidad = (existingItem.cantidad || 0) + 1; }
+            else { cart.push({ id: productId, nombre: nombre, precio: precioLimpio, imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', cantidad: 1 }); }
+            saveCart(cart);
+            actualizarBadgeCarrito();
+            Swal.fire({ icon: 'success', title: '¡Agregado!', text: nombre + ' agregado al carrito.', background: '#1a1a1a', color: '#ffffff', timer: 1500, showConfirmButton: false });
+        }
+
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.navbar-links');
+        const navActions = document.querySelector('.navbar-actions');
+        if (navToggle) {
+            navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); navActions.classList.toggle('open'); const icon = this.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); });
+        }
+        document.querySelectorAll('.navbar-links a').forEach(link => {
+            link.addEventListener('click', function() { if (window.innerWidth <= 768) { navLinks.classList.remove('open'); navActions.classList.remove('open'); const icon = navToggle.querySelector('i'); icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); } });
+        });
+
+        function actualizarNavbar() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navProfile = document.getElementById('navProfile');
+            const navAuth = document.getElementById('navAuth');
+            const navUserName = document.getElementById('navUserName');
+            const navAdminLink = document.getElementById('navAdminLink');
+            const navCartBadge = document.getElementById('navCartBadge');
+            if (user) { if (navProfile) navProfile.style.display = 'flex'; if (navAuth) navAuth.style.display = 'none'; if (navUserName) navUserName.textContent = user.name || 'Usuario'; if (navAdminLink) navAdminLink.style.display = user.role === 'admin' ? 'inline-flex' : 'none'; }
+            else { if (navProfile) navProfile.style.display = 'none'; if (navAuth) navAuth.style.display = 'flex'; }
+            if (navCartBadge) { const cart = JSON.parse(localStorage.getItem('cart') || '[]'); const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); navCartBadge.textContent = totalItems; navCartBadge.style.display = totalItems > 0 ? 'inline-block' : 'none'; }
+        }
+        document.getElementById('navLogout')?.addEventListener('click', function() {
+            Swal.fire({ title: '¿Cerrar sesión?', text: '¿Estás seguro de que quieres salir?', icon: 'question', background: '#1a1a1a', color: '#ffffff', showCancelButton: true, confirmButtonColor: '#c9a84c', cancelButtonColor: '#ff6b6b', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar' }).then((result) => { if (result.isConfirmed) { localStorage.removeItem('currentUser'); window.location.href = '/index.html'; } });
+        });
+        document.getElementById('navBtnLogin')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+        document.getElementById('navBtnRegister')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarBadgeCarrito();
+            actualizarNavbar();
+            cargarProductoDetalle();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ALBOR CONDE</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #000000; --black-soft: #0a0a0a; --gray-dark: #1a1a1a; --gray-medium: #2a2a2a;
+            --gray-text: #888888; --gray-light: #cccccc; --white: #ffffff; --gold: #c9a84c;
+            --gold-light: #d4b85a; --gold-dark: #a8893a; --red: #ff6b6b; --green: #6bcb77;
+        }
+        body { font-family: 'Inter', Arial, sans-serif; background: var(--black); color: var(--white); min-height: 100vh; }
+        
+        .navbar-unificado { background: rgba(0,0,0,0.92); padding: 12px 40px; border-bottom: 1px solid rgba(255,255,255,0.03); backdrop-filter: blur(20px); position: sticky; top: 0; z-index: 1000; }
+        .navbar-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .navbar-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .navbar-logo .logo-text span { color: var(--white); }
+        .navbar-logo .logo-badge { font-family: 'Inter', Arial, sans-serif; font-size: 0.5rem; font-weight: 600; padding: 2px 10px; background: rgba(201,168,76,0.15); color: var(--gold); border-radius: 50px; text-transform: uppercase; letter-spacing: 1px; }
+        .navbar-links { display: flex; gap: 30px; list-style: none; }
+        .navbar-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.3s; }
+        .navbar-links a:hover, .navbar-links a.active { color: var(--gold); }
+        .navbar-actions { display: flex; align-items: center; gap: 15px; }
+        .nav-profile { display: flex; align-items: center; gap: 8px; }
+        .nav-icon { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: color 0.3s; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px; font-family: 'Inter', Arial, sans-serif; }
+        .nav-icon:hover { color: var(--gold); }
+        .nav-icon i { font-size: 1.1rem; }
+        .nav-icon .admin-link { color: var(--gold); }
+        .nav-auth { display: flex; gap: 8px; }
+        .btn-nav { padding: 8px 18px; border-radius: 25px; font-family: 'Inter', Arial, sans-serif; font-size: 0.8rem; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.15); background: transparent; color: var(--white); }
+        .btn-nav:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.4); }
+        .btn-nav-register { background: var(--gold); border-color: var(--gold); color: var(--black); }
+        .btn-nav-register:hover { background: var(--gold-light); border-color: var(--gold-light); }
+        .nav-cart { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 1.2rem; transition: color 0.3s; position: relative; display: flex; align-items: center; }
+        .nav-cart:hover { color: var(--gold); }
+        .nav-cart .cart-badge { position: absolute; top: -8px; right: -12px; background: var(--gold); color: var(--black); border-radius: 50%; padding: 2px 7px; font-size: 0.6rem; font-weight: 700; display: none; }
+        .nav-toggle { display: none; background: transparent; border: none; color: var(--white); font-size: 1.5rem; cursor: pointer; }
+
+        .checkout-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .checkout-title { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--white); margin-bottom: 30px; }
+        .checkout-title i { color: var(--gold); margin-right: 12px; }
+        .checkout-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 40px; }
+        .checkout-form { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); }
+        .checkout-form h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--white); margin-bottom: 20px; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--gray-text); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 16px; background: var(--black-soft); border: 1px solid var(--gray-medium); border-radius: 10px; font-family: 'Inter', Arial, sans-serif; font-size: 0.95rem; color: var(--white); transition: border 0.3s; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--gold); }
+        .form-group input::placeholder { color: #555555; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .payment-methods { margin: 20px 0; }
+        .payment-methods h4 { font-size: 0.9rem; color: var(--gray-text); margin-bottom: 10px; }
+        .payment-option { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--black-soft); border: 1px solid var(--gray-medium); border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: all 0.3s; }
+        .payment-option:hover { border-color: var(--gold); }
+        .payment-option.selected { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+        .payment-option input[type="radio"] { accent-color: var(--gold); width: 18px; height: 18px; cursor: pointer; }
+        .payment-option label { font-size: 0.95rem; color: var(--white); cursor: pointer; flex: 1; }
+        .payment-option i { color: var(--gold); font-size: 1.2rem; width: 30px; text-align: center; }
+        .order-summary { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.03); align-self: flex-start; position: sticky; top: 20px; }
+        .order-summary h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--white); margin-bottom: 20px; }
+        .order-summary h3 i { color: var(--gold); margin-right: 10px; }
+        .order-items { max-height: 300px; overflow-y: auto; margin-bottom: 15px; }
+        .order-items::-webkit-scrollbar { width: 4px; }
+        .order-items::-webkit-scrollbar-track { background: var(--black-soft); }
+        .order-items::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 10px; }
+        .order-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; }
+        .order-item .item-name { color: var(--gray-text); }
+        .order-item .item-name span { color: var(--gray-text); font-size: 0.8rem; }
+        .order-item .item-total { color: var(--white); font-weight: 600; }
+        .order-totals { border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; }
+        .order-totals .row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 0.95rem; }
+        .order-totals .row .label { color: var(--gray-text); }
+        .order-totals .row.total { font-size: 1.3rem; font-weight: 700; color: var(--gold); border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; margin-top: 5px; }
+        .btn-confirm { width: 100%; padding: 16px; background: var(--gold); color: var(--black); border: none; border-radius: 50px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: background 0.3s; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-confirm:hover { background: var(--gold-light); }
+        .btn-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+        .empty-checkout { text-align: center; padding: 60px 20px; }
+        .empty-checkout i { font-size: 4rem; color: rgba(255,255,255,0.03); margin-bottom: 20px; }
+        .empty-checkout h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: rgba(255,255,255,0.2); }
+        .empty-checkout p { color: rgba(255,255,255,0.15); margin: 10px 0 30px; }
+        .empty-checkout .btn { display: inline-block; padding: 12px 30px; background: var(--gold); color: var(--black); border-radius: 50px; text-decoration: none; font-weight: 600; transition: background 0.3s; }
+        .empty-checkout .btn:hover { background: var(--gold-light); }
+
+        .footer-unificado { background: var(--black-soft); border-top: 1px solid rgba(255,255,255,0.03); padding: 60px 40px 0; margin-top: 40px; }
+        .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 40px; padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .footer-col h3, .footer-col h4 { font-family: 'Playfair Display', serif; color: var(--white); margin-bottom: 15px; }
+        .footer-col h3 { font-size: 1.3rem; }
+        .footer-col h3 span { color: var(--gold); }
+        .footer-col p { color: var(--gray-text); font-size: 0.9rem; line-height: 1.6; max-width: 300px; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 8px; }
+        .footer-col ul li a { color: var(--gray-text); text-decoration: none; font-size: 0.9rem; transition: color 0.3s; }
+        .footer-col ul li a:hover { color: var(--gold); }
+        .footer-col .footer-contact li { color: var(--gray-text); font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+        .footer-col .footer-contact li i { color: var(--gold); width: 18px; }
+        .footer-social { display: flex; gap: 12px; margin-top: 15px; }
+        .footer-social a { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.03); color: var(--gray-text); transition: all 0.3s ease; text-decoration: none; }
+        .footer-social a:hover { background: var(--gold); color: var(--black); }
+        .footer-bottom { max-width: 1200px; margin: 0 auto; padding: 20px 0; }
+        .footer-bottom-container { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .footer-bottom p { color: var(--gray-text); font-size: 0.8rem; }
+        .footer-bottom-links { display: flex; gap: 20px; }
+        .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
+        .footer-bottom-links a:hover { color: var(--gold); }
+
+        @media (max-width: 768px) {
+            .checkout-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .checkout-title { font-size: 1.8rem; }
+            .checkout-form { padding: 20px; }
+            .order-summary { position: static; }
+            .navbar-unificado { padding: 10px 20px; }
+            .navbar-links { display: none; flex-direction: column; width: 100%; padding: 20px 0; gap: 15px; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); margin-top: 12px; }
+            .navbar-links.open { display: flex; }
+            .navbar-actions { display: none; }
+            .navbar-actions.open { display: flex; flex-direction: column; width: 100%; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.03); }
+            .nav-toggle { display: block; }
+            .footer-container { grid-template-columns: 1fr; gap: 30px; padding: 30px 0; }
+            .footer-unificado { padding: 40px 20px 0; }
+            .footer-bottom-container { flex-direction: column; text-align: center; }
+            .footer-bottom-links { flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 480px) {
+            .navbar-logo { font-size: 1rem; }
+            .navbar-logo .logo-badge { display: none; }
+            .footer-col p { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar-unificado">
+        <div class="navbar-container">
+            <a href="/index.html" class="navbar-logo"><span class="logo-text">ALBOR <span>CONDE</span></span><span class="logo-badge">MIPYME</span></a>
+            <ul class="navbar-links">
+                <li><a href="/index.html" id="navInicio">Inicio</a></li>
+                <li><a href="/catalogo.html" id="navCatalogo">Catálogo</a></li>
+                <li><a href="/contacto.html" id="navContacto">Contacto</a></li>
+            </ul>
+            <div class="navbar-actions">
+                <div class="nav-profile" id="navProfile" style="display:none;">
+                    <a href="/perfil.html" class="nav-icon" title="Mi Perfil"><i class="fas fa-user-circle"></i><span id="navUserName">Usuario</span></a>
+                    <a href="/historial-pedidos.html" class="nav-icon" title="Mis Pedidos"><i class="fas fa-box"></i></a>
+                    <a href="/admin.html" id="navAdminLink" class="nav-icon admin-link" style="display:none;" title="Panel Admin"><i class="fas fa-cog"></i></a>
+                    <button class="nav-icon" id="navLogout" title="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+                <div class="nav-auth" id="navAuth">
+                    <button class="btn-nav" id="navBtnLogin">Iniciar Sesión</button>
+                    <button class="btn-nav btn-nav-register" id="navBtnRegister">Registrarse</button>
+                </div>
+                <a href="/carrito.html" class="nav-cart" title="Carrito"><i class="fas fa-shopping-cart"></i><span class="cart-badge" id="navCartBadge">0</span></a>
+            </div>
+            <button class="nav-toggle" id="navToggle" aria-label="Menú"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="checkout-container">
+        <h1 class="checkout-title"><i class="fas fa-credit-card"></i> Finalizar Compra</h1>
+        <div class="empty-checkout" id="emptyCheckout" style="display:none;"><i class="fas fa-shopping-cart"></i><h2>Tu carrito está vacío</h2><p>Agrega productos antes de finalizar tu compra.</p><a href="/index.html" class="btn">Ver productos</a></div>
+        <div id="checkoutContent" style="display:none;">
+            <div class="checkout-grid">
+                <div class="checkout-form">
+                    <h3><i class="fas fa-user" style="color:#c9a84c; margin-right:10px;"></i> Datos de Envío</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>Nombres</label><input type="text" id="checkoutName" placeholder="Tus nombres" required></div>
+                        <div class="form-group"><label>Apellidos</label><input type="text" id="checkoutLastName" placeholder="Tus apellidos" required></div>
+                    </div>
+                    <div class="form-group"><label>Gmail</label><input type="email" id="checkoutEmail" placeholder="tucorreo@gmail.com" required></div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Teléfono</label><input type="tel" id="checkoutPhone" placeholder="+53 5XXX XXXX" required></div>
+                        <div class="form-group"><label>Dirección</label><input type="text" id="checkoutAddress" placeholder="Calle y número" required></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Ciudad</label><input type="text" id="checkoutCity" placeholder="Ciudad" required></div>
+                        <div class="form-group"><label>Provincia</label><input type="text" id="checkoutProvince" placeholder="Provincia" required></div>
+                    </div>
+                    <div class="form-group"><label>Código Postal (opcional)</label><input type="text" id="checkoutZip" placeholder="Código postal"></div>
+                    <div class="payment-methods">
+                        <h4><i class="fas fa-credit-card" style="color:#c9a84c; margin-right:8px;"></i> Método de Pago</h4>
+                        <div class="payment-option selected" onclick="selectPayment('enzona')"><input type="radio" name="payment" id="payEnzona" value="enzona" checked><label for="payEnzona">Enzona (Pasarela de pago)</label><i class="fas fa-mobile-alt"></i></div>
+                        <div class="payment-option" onclick="selectPayment('transferencia')"><input type="radio" name="payment" id="payTransferencia" value="transferencia"><label for="payTransferencia">Transferencia Bancaria</label><i class="fas fa-university"></i></div>
+                        <div class="payment-option" onclick="selectPayment('efectivo')"><input type="radio" name="payment" id="payEfectivo" value="efectivo"><label for="payEfectivo">Efectivo (Contraentrega)</label><i class="fas fa-money-bill-wave"></i></div>
+                    </div>
+                </div>
+                <div class="order-summary" id="orderSummary">
+                    <h3><i class="fas fa-receipt"></i> Resumen del Pedido</h3>
+                    <div class="order-items" id="orderItems"></div>
+                    <div class="order-totals">
+                        <div class="row"><span class="label">Subtotal</span><span id="summarySubtotal">$0.00</span></div>
+                        <div class="row"><span class="label">Impuesto (10%)</span><span id="summaryTax">$0.00</span></div>
+                        <div class="row total"><span>Total</span><span id="summaryTotal">$0.00</span></div>
+                    </div>
+                    <button class="btn-confirm" id="btnConfirmOrder" onclick="confirmOrder()"><i class="fas fa-check-circle"></i> Confirmar Pedido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-unificado">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h3 class="footer-logo">ALBOR <span>CONDE</span></h3>
+                <p>Microempresa privada dedicada a la construcción, fabricación de muebles, moda, panadería y comercio online.</p>
+                <div class="footer-social">
+                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Enlaces</h4>
+                <ul>
+                    <li><a href="/index.html">Inicio</a></li>
+                    <li><a href="/catalogo.html">Catálogo</a></li>
+                    <li><a href="/contacto.html">Contacto</a></li>
+                    <li><a href="/perfil.html">Mi Perfil</a></li>
+                    <li><a href="/historial-pedidos.html">Mis Pedidos</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Líneas de Negocio</h4>
+                <ul>
+                    <li><a href="/catalogo.html?cat=construccion">Construcción</a></li>
+                    <li><a href="/catalogo.html?cat=productos">Productos</a></li>
+                    <li><a href="/catalogo.html?cat=textileria">Textilería</a></li>
+                    <li><a href="/catalogo.html">Muebles y Decoración</a></li>
+                    <li><a href="/catalogo.html">Comercio Online</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Contacto</h4>
+                <ul class="footer-contact">
+                    <li><i class="fas fa-map-marker-alt"></i> Baracoa, Guantánamo, Cuba</li>
+                    <li><i class="fas fa-phone"></i> <a href="tel:+5356620861">+53 5 662 0861</a></li>
+                    <li><i class="fas fa-envelope"></i> <a href="mailto:laboriloresyilian@gmail.com">laboriloresyilian@gmail.com</a></li>
+                    <li><i class="fas fa-clock"></i> Lun-Vie: 8am-6pm</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="footer-bottom-container">
+                <p>&copy; 2025 ALBOR CONDE. Todos los derechos reservados.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Términos y Condiciones</a>
+                    <a href="#">Política de Privacidad</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const TIEMPO_CANCELACION_HORAS = 36;
+
+        function getCart() { const cart = localStorage.getItem('cart'); return cart ? JSON.parse(cart) : []; }
+        function saveCart(cart) { localStorage.setItem('cart', JSON.stringify(cart)); }
+        function getCartTotal() { const cart = getCart(); return cart.reduce((total, item) => { const precio = typeof item.precio === 'number' ? item.precio : parseFloat(item.precio) || 0; return total + (precio * (item.cantidad || 0)); }, 0); }
+        function getCartItemCount() { const cart = getCart(); return cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); }
+        function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
+
+        let selectedPayment = 'enzona';
+        function selectPayment(method) {
+            selectedPayment = method;
+            document.querySelectorAll('.payment-option').forEach(el => el.classList.remove('selected'));
+            document.querySelector(`.payment-option:has(input[value="${method}"])`).classList.add('selected');
+            document.querySelector(`input[name="payment"][value="${method}"]`).checked = true;
+        }
+
+        function renderSummary() {
+            const cart = getCart();
+            const container = document.getElementById('orderItems');
+            const subtotalSpan = document.getElementById('summarySubtotal');
+            const taxSpan = document.getElementById('summaryTax');
+            const totalSpan = document.getElementById('summaryTotal');
+            const checkoutContent = document.getElementById('checkoutContent');
+            const emptyCheckout = document.getElementById('emptyCheckout');
+            if (cart.length === 0) {
+                checkoutContent.style.display = 'none';
+                emptyCheckout.style.display = 'block';
+                return;
+            }
+            checkoutContent.style.display = 'block';
+            emptyCheckout.style.display = 'none';
+            let html = '';
+            cart.forEach(item => {
+                const precio = typeof item.precio === 'number' ? item.precio : parseFloat(item.precio) || 0;
+                const subtotal = precio * (item.cantidad || 0);
+                html += `<div class="order-item"><span class="item-name">${item.nombre} <span>x${item.cantidad}</span></span><span class="item-total">$${subtotal.toFixed(2)}</span></div>`;
+            });
+            container.innerHTML = html;
+            const subtotal = getCartTotal();
+            const tax = subtotal * 0.10;
+            const total = subtotal + tax;
+            if (subtotalSpan) subtotalSpan.textContent = '$' + subtotal.toFixed(2);
+            if (taxSpan) taxSpan.textContent = '$' + tax.toFixed(2);
+            if (totalSpan) totalSpan.textContent = '$' + total.toFixed(2);
+        }
+
+        // ============================================================
+        // CONFIRMAR PEDIDO - CON CSRF CORREGIDO
+        // ============================================================
+        async function confirmOrder() {
+            const name = document.getElementById('checkoutName').value.trim();
+            const lastName = document.getElementById('checkoutLastName').value.trim();
+            const email = document.getElementById('checkoutEmail').value.trim();
+            const phone = document.getElementById('checkoutPhone').value.trim();
+            const address = document.getElementById('checkoutAddress').value.trim();
+            const city = document.getElementById('checkoutCity').value.trim();
+            const province = document.getElementById('checkoutProvince').value.trim();
+
+            if (!name || !lastName || !email || !phone || !address || !city || !province) {
+                Swal.fire({ icon: 'warning', title: 'Campos obligatorios', text: 'Por favor, completa todos los campos obligatorios.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                return;
+            }
+            if (!email.includes('@')) {
+                Swal.fire({ icon: 'error', title: 'Gmail inválido', text: 'Por favor, ingresa un Gmail válido.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                return;
+            }
+            const cart = getCart();
+            if (cart.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'Carrito vacío', text: 'Tu carrito está vacío.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                return;
+            }
+            const subtotal = getCartTotal();
+            const tax = subtotal * 0.10;
+            const total = subtotal + tax;
+
+            const orderData = {
+                user_email: email,
+                customer: { name: name + ' ' + lastName, email: email, phone: phone, address: address, city: city, province: province },
+                items: cart.map(item => ({ id: item.id, nombre: item.nombre, precio: typeof item.precio === 'number' ? item.precio : parseFloat(item.precio) || 0, cantidad: item.cantidad || 0 })),
+                total: total,
+                metodo_pago: selectedPayment
+            };
+
+            const csrftoken = document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1];
+
+            try {
+                const response = await fetch('/api/crear-pedido/', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(orderData)
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.removeItem('cart');
+                    actualizarBadgeCarrito();
+                    window.location.href = '/confirmacion.html?order_id=' + data.pedido_id;
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error al crear el pedido', text: data.error || 'Ocurrió un problema inesperado.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo conectar con el servidor.', background: '#1a1a1a', color: '#ffffff', confirmButtonColor: '#c9a84c' });
+            }
+        }
+
+        const navToggle = document.getElementById('navToggle');
+        const navLinks = document.querySelector('.navbar-links');
+        const navActions = document.querySelector('.navbar-actions');
+        if (navToggle) { navToggle.addEventListener('click', function() { navLinks.classList.toggle('open'); navActions.classList.toggle('open'); const icon = this.querySelector('i'); icon.classList.toggle('fa-bars'); icon.classList.toggle('fa-times'); }); }
+        document.querySelectorAll('.navbar-links a').forEach(link => { link.addEventListener('click', function() { if (window.innerWidth <= 768) { navLinks.classList.remove('open'); navActions.classList.remove('open'); const icon = navToggle.querySelector('i'); icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); } }); });
+        function actualizarNavbar() {
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            const navProfile = document.getElementById('navProfile');
+            const navAuth = document.getElementById('navAuth');
+            const navUserName = document.getElementById('navUserName');
+            const navAdminLink = document.getElementById('navAdminLink');
+            const navCartBadge = document.getElementById('navCartBadge');
+            if (user) { if (navProfile) navProfile.style.display = 'flex'; if (navAuth) navAuth.style.display = 'none'; if (navUserName) navUserName.textContent = user.name || 'Usuario'; if (navAdminLink) navAdminLink.style.display = user.role === 'admin' ? 'inline-flex' : 'none'; }
+            else { if (navProfile) navProfile.style.display = 'none'; if (navAuth) navAuth.style.display = 'flex'; }
+            if (navCartBadge) { const cart = JSON.parse(localStorage.getItem('cart') || '[]'); const totalItems = cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); navCartBadge.textContent = totalItems; navCartBadge.style.display = totalItems > 0 ? 'inline-block' : 'none'; }
+        }
+        document.getElementById('navLogout')?.addEventListener('click', function() {
+            Swal.fire({ title: '¿Cerrar sesión?', text: '¿Estás seguro de que quieres salir?', icon: 'question', background: '#1a1a1a', color: '#ffffff', showCancelButton: true, confirmButtonColor: '#c9a84c', cancelButtonColor: '#ff6b6b', confirmButtonText: 'Sí, salir', cancelButtonText: 'Cancelar' }).then((result) => { if (result.isConfirmed) { localStorage.removeItem('currentUser'); window.location.href = '/index.html'; } });
+        });
+        document.getElementById('navBtnLogin')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+        document.getElementById('navBtnRegister')?.addEventListener('click', function() { window.location.href = '/index.html'; });
+        document.addEventListener('DOMContentLoaded', function() { actualizarNavbar(); renderSummary(); actualizarBadgeCarrito(); });
+    </script>
+</body>
+</html>

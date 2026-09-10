@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura Electrónica - ALBOR CONDE</title>
+    <style>
+        /* ============================================================
+           ESTILOS PROFESIONALES PARA PDF
+           ============================================================ */
+        
+        /* Reset y base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #ffffff;
+            color: #1a1a1a;
+            font-size: 11px;
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Contenedor principal */
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 50px;
+            background: #ffffff;
+        }
+        
+        /* ============================================================
+           CABECERA
+           ============================================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #c9a84c;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .header-left {
+            flex: 1;
+        }
+        
+        .header-left .company-name {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #000000;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+        
+        .header-left .company-name span {
+            color: #c9a84c;
+        }
+        
+        .header-left .company-tagline {
+            font-family: 'Arial', sans-serif;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #888888;
+            font-weight: 400;
+        }
+        
+        .header-right {
+            text-align: right;
+        }
+        
+        .header-right .invoice-title {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: #c9a84c;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .header-right .invoice-number {
+            font-family: 'Arial', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        
+        .header-right .invoice-date {
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+            color: #888888;
+            margin-top: 4px;
+        }
+        
+        /* ============================================================
+           DATOS DEL CLIENTE Y EMPRESA
+           ============================================================ */
+        .info-grid {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            border-left: 4px solid #c9a84c;
+        }
+        
+        .info-box {
+            flex: 1;
+        }
+        
+        .info-box:last-child {
+            text-align: right;
+        }
+        
+        .info-box .label {
+            font-family: 'Arial', sans-serif;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888888;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .info-box .value {
+            font-family: 'Arial', sans-serif;
+            font-size: 11px;
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .info-box .value-company {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #000000;
+        }
+        
+        /* ============================================================
+           TABLA DE PRODUCTOS
+           ============================================================ */
+        .table-container {
+            margin: 25px 0 30px;
+        }
+        
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+        }
+        
+        .table-container table thead th {
+            background: #1a1a1a;
+            color: #ffffff;
+            padding: 12px 12px;
+            text-align: left;
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .table-container table thead th.text-right {
+            text-align: right;
+        }
+        
+        .table-container table thead th.text-center {
+            text-align: center;
+        }
+        
+        .table-container table tbody td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e8e8e8;
+            font-size: 10px;
+            color: #1a1a1a;
+        }
+        
+        .table-container table tbody tr:nth-child(even) {
+            background: #fcfcfc;
+        }
+        
+        .table-container table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .table-container table tbody td.text-right {
+            text-align: right;
+        }
+        
+        .table-container table tbody td.text-center {
+            text-align: center;
+        }
+        
+        .table-container table tbody .product-name {
+            font-weight: 600;
+            color: #000000;
+        }
+        
+        /* ============================================================
+           TOTALES
+           ============================================================ */
+        .totals {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #c9a84c;
+        }
+        
+        .totals-box {
+            min-width: 250px;
+        }
+        
+        .totals-box .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            font-family: 'Arial', sans-serif;
+            font-size: 10px;
+        }
+        
+        .totals-box .row .label {
+            color: #888888;
+            font-weight: 400;
+        }
+        
+        .totals-box .row .value {
+            color: #1a1a1a;
+            font-weight: 500;
+        }
+        
+        .totals-box .row.total {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 18px;
+            padding-top: 10px;
+            margin-top: 5px;
+            border-top: 2px solid #c9a84c;
+        }
+        
+        .totals-box .row.total .label {
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+        
+        .totals-box .row.total .value {
+            color: #c9a84c;
+            font-weight: 700;
+            font-size: 20px;
+        }
+        
+        /* ============================================================
+           PIE DE PÁGINA
+           ============================================================ */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e8e8;
+            text-align: center;
+        }
+        
+        .footer .thank-you {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 16px;
+            color: #1a1a1a;
+            margin-bottom: 6px;
+        }
+        
+        .footer .thank-you span {
+            color: #c9a84c;
+        }
+        
+        .footer .company-info {
+            font-family: 'Arial', sans-serif;
+            font-size: 9px;
+            color: #888888;
+            line-height: 1.8;
+        }
+        
+        .footer .company-info a {
+            color: #c9a84c;
+            text-decoration: none;
+        }
+        
+        .footer .company-info .divider {
+            margin: 0 8px;
+            color: #dddddd;
+        }
+        
+        .footer .terms {
+            font-family: 'Arial', sans-serif;
+            font-size: 7px;
+            color: #aaaaaa;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eeeeee;
+        }
+        
+        /* ============================================================
+           RESPONSIVE (para vista previa)
+           ============================================================ */
+        @media (max-width: 600px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .header-right {
+                text-align: center;
+                margin-top: 15px;
+            }
+            .info-grid {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            .info-box:last-child {
+                text-align: center;
+            }
+            .totals {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-container">
+        
+        <!-- ============================================================
+        CABECERA
+        ============================================================ -->
+        <div class="header">
+            <div class="header-left">
+                <div class="company-name">ALBOR <span>CONDE</span></div>
+                <div class="company-tagline">Microempresa Privada</div>
+            </div>
+            <div class="header-right">
+                <div class="invoice-title">Factura Electrónica</div>
+                <div class="invoice-number">#{{ pedido.id }}</div>
+                <div class="invoice-date">{{ pedido.fecha|date:"d/m/Y" }} · {{ pedido.fecha|date:"H:i" }}</div>
+            </div>
+        </div>
+        
+        <!-- ============================================================
+        DATOS DEL CLIENTE Y EMPRESA
+        ============================================================ -->
+        <div class="info-grid">
+            <div class="info-box">
+                <div class="label">Cliente</div>
+                <div class="value">{{ customer.name }}</div>
+                <div class="value">{{ customer.email }}</div>
+                <div class="value">{{ customer.address }}</div>
+                <div class="value">Tel: {{ customer.phone }}</div>
+            </div>
+            <div class="info-box">
+                <div class="label">Empresa</div>
+                <div class="value-company">ALBOR CONDE S.U.R.L</div>
+                <div class="value">Baracoa, Guantánamo, Cuba</div>
+                <div class="value">Tel: +53 5 662 0861</div>
+                <div class="value">Email: alborconde@gmail.com</div>
+            </div>
+        </div>
+        
+        <!-- ============================================================
+        TABLA DE PRODUCTOS
+        ============================================================ -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="text-center">Cantidad</th>
+                        <th class="text-right">Precio</th>
+                        <th class="text-right">Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td class="product-name">{{ item.nombre }}</td>
+                        <td class="text-center">{{ item.cantidad }}</td>
+                        <td class="text-right">${{ item.precio|floatformat:2 }}</td>
+                        <td class="text-right">${{ item.cantidad|add:0|mul:item.precio|floatformat:2 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- ============================================================
+        TOTALES
+        ============================================================ -->
+        <div class="totals">
+            <div class="totals-box">
+                <div class="row">
+                    <span class="label">Subtotal</span>
+                    <span class="value">${{ total|floatformat:2 }}</span>
+                </div>
+                <div class="row">
+                    <span class="label">Impuesto (10%)</span>
+                    <span class="value">${{ total|add:0|mul:0.10|floatformat:2 }}</span>
+                </div>
+                <div class="row total">
+                    <span class="label">Total</span>
+                    <span class="value">${{ total|floatformat:2 }}</span>
+                </div>
+                <div style="text-align:right; margin-top:5px; font-family:'Arial',sans-serif; font-size:8px; color:#888888;">
+                    Método de pago: {{ pedido.metodo_pago }}
+                </div>
+            </div>
+        </div>
+        
+        <!-- ============================================================
+        PIE DE PÁGINA
+        ============================================================ -->
+        <div class="footer">
+            <div class="thank-you">¡Gracias por tu <span>confianza</span>!</div>
+            <div class="company-info">
+                ALBOR CONDE S.U.R.L
+                <span class="divider">|</span>
+                Baracoa, Guantánamo, Cuba
+                <span class="divider">|</span>
+                <a href="mailto:alborconde@gmail.com">alborconde@gmail.com</a>
+                <span class="divider">|</span>
+                +53 5 662 0861
+            </div>
+            <div class="terms">
+                Este documento es una factura electrónica válida para todos los efectos legales.
+                Los productos y servicios están sujetos a disponibilidad y términos de venta.
+            </div>
+        </div>
+        
+    </div>
+</body>
+</html>
