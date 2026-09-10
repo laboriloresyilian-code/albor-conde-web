@@ -1,0 +1,229 @@
+/* ============================================================
+   ESTILOS PARA PDF - ALBOR CONDE
+   ============================================================ */
+
+/* @page define los márgenes de la página completa */
+@page {
+    margin: 0;
+    size: A4;
+    padding: 0;
+}
+
+/* Estructura base */
+body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-size: 11px;
+    line-height: 1.6;
+    padding: 0;
+    margin: 0;
+}
+
+.invoice-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 50px;
+    background: #ffffff;
+}
+
+/* Cabecera */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 3px solid #c9a84c;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.company-name {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000000;
+    letter-spacing: 2px;
+}
+
+.company-name span {
+    color: #c9a84c;
+}
+
+.company-tagline {
+    font-family: 'Arial', sans-serif;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #888888;
+}
+
+.invoice-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #c9a84c;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.invoice-number {
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a1a;
+}
+
+.invoice-date {
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+    color: #888888;
+}
+
+/* Datos del cliente */
+.info-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8f8f8;
+    border-left: 4px solid #c9a84c;
+}
+
+.info-box .label {
+    font-family: 'Arial', sans-serif;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888888;
+    font-weight: 600;
+}
+
+.info-box .value {
+    font-family: 'Arial', sans-serif;
+    font-size: 11px;
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/* Tabla de productos */
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+}
+
+.table-container table thead th {
+    background: #1a1a1a;
+    color: #ffffff;
+    padding: 12px 12px;
+    text-align: left;
+    font-size: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.table-container table tbody td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.table-container table tbody tr:nth-child(even) {
+    background: #fcfcfc;
+}
+
+.table-container table tbody .product-name {
+    font-weight: 600;
+    color: #000000;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Totales */
+.totals {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #c9a84c;
+}
+
+.totals-box {
+    min-width: 250px;
+}
+
+.totals-box .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-family: 'Arial', sans-serif;
+    font-size: 10px;
+}
+
+.totals-box .row .label {
+    color: #888888;
+}
+
+.totals-box .row.total {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 18px;
+    padding-top: 10px;
+    margin-top: 5px;
+    border-top: 2px solid #c9a84c;
+}
+
+.totals-box .row.total .label {
+    color: #1a1a1a;
+    font-weight: 700;
+}
+
+.totals-box .row.total .value {
+    color: #c9a84c;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+/* Pie de página */
+.footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e8e8e8;
+    text-align: center;
+}
+
+.footer .thank-you {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 16px;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+}
+
+.footer .thank-you span {
+    color: #c9a84c;
+}
+
+.footer .company-info {
+    font-family: 'Arial', sans-serif;
+    font-size: 9px;
+    color: #888888;
+    line-height: 1.8;
+}
+
+.footer .company-info a {
+    color: #c9a84c;
+    text-decoration: none;
+}
+
+.footer .terms {
+    font-family: 'Arial', sans-serif;
+    font-size: 7px;
+    color: #aaaaaa;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eeeeee;
+}
