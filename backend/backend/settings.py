@@ -14,7 +14,7 @@ PROJECT_ROOT = BASE_DIR.parent
 # SECURITY
 SECRET_KEY = os.environ.get('SECRET_KEY', default='tu-clave-de-desarrollo')
 DEBUG = 'RENDER' not in os.environ
-ALLOWED_HOSTS = ['127.0.0.1', '.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', '.onrender.com', 'alborconde.pythonanywhere.com']
 
 # CSRF - Configuración para producción
 CSRF_TRUSTED_ORIGINS = [
