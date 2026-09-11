@@ -353,6 +353,26 @@
     </div>
 
     <script>
+    
+    // ============================================================
+    // FUNCIÓN PARA OBTENER COOKIES (CSRF)
+    // ============================================================
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    
         // ============================================================
         // VARIABLES GLOBALES
         // ============================================================
@@ -405,7 +425,7 @@
             try {
                 const method = producto.id ? 'PUT' : 'POST';
                 const url = producto.id ? `/api/productos/${producto.id}/` : '/api/productos/';
-                const csrftoken = getCsrfToken();
+                const csrftoken = getCookie('csrftoken');
                 
                 const response = await fetch(url, {
                     method: method,
@@ -431,7 +451,7 @@
 
         async function eliminarProductoBackend(id) {
             try {
-                const csrftoken = getCsrfToken();
+                const csrftoken = getCookie('csrftoken');
                 
                 const response = await fetch(`/api/productos/${id}/`, {
                     method: 'DELETE',
@@ -656,7 +676,7 @@
                 color: '#ffffff'
             }).then((result) => {
                 if (result.value) {
-                    const csrftoken = getCsrfToken();
+                    const csrftoken = getCookie('csrftoken');
                     fetch(`/api/pedidos/${id}/`, {
                         method: 'PUT',
                         headers: { 

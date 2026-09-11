@@ -1,11 +1,17 @@
 from django.contrib import admin
 from django.urls import path
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.conf.urls.static import static
 from tienda import views
 
+@ensure_csrf_cookie
+def index_view(request):
+    return TemplateView.as_view(template_name='index.html')(request)
+
 urlpatterns = [
+
     path('admin/', admin.site.urls),
     path('api/productos/', views.catalogo_api, name='catalogo_api'),
     path('api/crear-pedido/', views.crear_pedido, name='crear_pedido'),
@@ -16,7 +22,9 @@ urlpatterns = [
     path('api/guardar-carrito/', views.guardar_carrito, name='guardar_carrito'),
     path('api/obtener-carrito/', views.obtener_carrito, name='obtener_carrito'),
     path('api/contacto/', views.enviar_contacto, name='enviar_contacto'),
-    
+
+    path('', index_view, name='index'),
+    path('index.html', index_view, name='index_html'),
     path('index.html', TemplateView.as_view(template_name='index.html')),
     path('catalogo.html', TemplateView.as_view(template_name='catalogo.html')),
     path('carrito.html', TemplateView.as_view(template_name='carrito.html')),
