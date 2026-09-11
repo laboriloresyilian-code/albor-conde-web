@@ -9,7 +9,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # PROJECT_ROOT = web/ (la raíz del proyecto)
-PROJECT_ROOT = BASE_DIR.parent.parent
+PROJECT_ROOT = BASE_DIR.parent
 
 # SECURITY
 SECRET_KEY = os.environ.get('SECRET_KEY', default='tu-clave-de-desarrollo')
@@ -44,7 +44,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'backend.urls'
+ROOT_URLCONF = 'backend.backend.urls'
 
 TEMPLATES = [
     {
@@ -80,7 +80,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'tienda.Usuario'
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # INTERNACIONALIZACIÓN
 LANGUAGE_CODE = 'es-es'
 TIME_ZONE = 'America/Havana'
