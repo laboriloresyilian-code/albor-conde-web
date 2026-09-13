@@ -99,6 +99,13 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# CORREO - DESARROLLO
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = BASE_DIR / 'correos_enviados'
+# ============================================================
+# CORREO - PRODUCCIÓN (Gmail SMTP)
+# ============================================================
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'laboriloresyilian@gmail.com'
+EMAIL_HOST_PASSWORD = 'kmjhlyzlrnutxqhv'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
