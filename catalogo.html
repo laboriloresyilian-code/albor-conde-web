@@ -306,7 +306,7 @@
 // ============================================================
 function addToCart(productId, nombre, precio, imagen, cantidad = 1) {
     const cart = getCart();
-    const existingItem = cart.find(item => item.id === productId);
+    const existingItem = cart.find(item => item.id == productId);
     
     // Asegurar que el precio sea un número
     let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
