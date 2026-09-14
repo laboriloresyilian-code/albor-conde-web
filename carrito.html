@@ -277,25 +277,46 @@
         }
         
         function clearCart() {
-            Swal.fire({
-                title: '¿Vaciar carrito?',
-                text: '¿Estás seguro de que quieres eliminar todos los productos?',
-                icon: 'warning',
-                background: '#1a1a1a',
-                color: '#ffffff',
-                showCancelButton: true,
-                confirmButtonColor: '#ff6b6b',
-                cancelButtonColor: '#888888',
-                confirmButtonText: 'Sí, vaciar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    localStorage.removeItem('cart');
-                    renderCart();
-                    guardarCarritoEnServidor();
+    Swal.fire({
+        title: '¿Vaciar carrito?',
+        text: '¿Estás seguro de que quieres eliminar todos los productos?',
+        icon: 'warning',
+        background: '#1a1a1a',
+        color: '#ffffff',
+        showCancelButton: true,
+        confirmButtonColor: '#ff6b6b',
+        cancelButtonColor: '#888888',
+        confirmButtonText: 'Sí, vaciar',
+        cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // 1. Borrar del localStorage
+            localStorage.removeItem('cart');
+            
+            // 2. Borrar del servidor
+            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+            if (user) {
+                const csrftoken = getCookie('csrftoken');
+                try {
+                    await fetch('/api/guardar-carrito/', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify({ email: user.email, items: [] })
+                    });
+                } catch (error) {
+                    console.error('Error al vaciar carrito en servidor:', error);
                 }
-            });
+            }
+            
+            // 3. Actualizar la UI
+            actualizarBadgeCarrito();
+            renderCart();
         }
+    });
+}
         
         function updateQuantity(productId, nuevaCantidad) {
             const cart = getCart();
@@ -380,20 +401,26 @@
         // OBTENER CARRITO DESDE EL SERVIDOR
         // ============================================================
         async function obtenerCarritoDelServidor() {
-            const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-            if (!user) return;
-            
-            try {
-                const response = await fetch(`/api/obtener-carrito/?email=${encodeURIComponent(user.email)}`);
-                const data = await response.json();
-                if (response.ok && data.length > 0) {
-                    saveCart(data);
-                    renderCart();
-                }
-            } catch (error) {
-                console.error('Error al obtener carrito:', error);
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!user) return;
+    
+    try {
+        const response = await fetch(`/api/obtener-carrito/?email=${encodeURIComponent(user.email)}`);
+        const data = await response.json();
+        if (response.ok) {
+            // Siempre actualizar el localStorage, incluso si está vacío
+            if (data.length > 0) {
+                saveCart(data);
+            } else {
+                // Si el servidor dice que el carrito está vacío, borrar el localStorage
+                localStorage.removeItem('cart');
             }
+            renderCart();
         }
+    } catch (error) {
+        console.error('Error al obtener carrito:', error);
+    }
+}
 
         // ============================================================
         // RENDERIZAR CARRITO - CORREGIDO
