@@ -109,6 +109,57 @@
         .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
         .footer-bottom-links a:hover { color: var(--gold); }
 
+        /* ============ SELECTOR DE CANTIDAD EN CATÁLOGO ============ */
+.producto-card .producto-info .cantidad-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    padding: 8px 0;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.producto-card .producto-info .cantidad-selector .btn-qty-catalogo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--white);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.producto-card .producto-info .cantidad-selector .btn-qty-catalogo:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.producto-card .producto-info .cantidad-selector .qty-catalogo {
+    width: 50px;
+    padding: 6px 8px;
+    background: var(--black-soft);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    color: var(--white);
+    font-size: 0.95rem;
+    text-align: center;
+    font-family: 'Inter', Arial, sans-serif;
+    outline: none;
+    -moz-appearance: textfield;
+}
+.producto-card .producto-info .cantidad-selector .qty-catalogo::-webkit-inner-spin-button,
+.producto-card .producto-info .cantidad-selector .qty-catalogo::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.producto-card .producto-info .cantidad-selector .qty-catalogo:focus {
+    border-color: var(--gold);
+}
         @media (max-width: 1024px) { .productos-grid { grid-template-columns: repeat(3, 1fr); } }
         @media (max-width: 768px) {
             .catalogo-header h1 { font-size: 1.8rem; }
@@ -250,40 +301,89 @@
         function getCartItemCount() { const cart = getCart(); return cart.reduce((sum, item) => sum + (item.cantidad || 0), 0); }
         function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
 
-        // ============================================================
-        // ADD TO CART - CORREGIDO (precio como número)
-        // ============================================================
-        function addToCart(productId, nombre, precio, imagen) {
-            const cart = getCart();
-            const existingItem = cart.find(item => item.id === productId);
-            
-            // Asegurar que el precio sea un número
-            let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
-            
-            if (existingItem) {
-                existingItem.cantidad = (existingItem.cantidad || 0) + 1;
-            } else {
-                cart.push({ 
-                    id: productId, 
-                    nombre: nombre, 
-                    precio: precioLimpio, 
-                    imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', 
-                    cantidad: 1 
-                });
-            }
-            saveCart(cart);
-            actualizarBadgeCarrito();
-            Swal.fire({ 
-                icon: 'success', 
-                title: '¡Agregado!', 
-                text: nombre + ' agregado al carrito.', 
-                background: '#1a1a1a', 
-                color: '#ffffff', 
-                timer: 1500, 
-                showConfirmButton: false 
-            });
-        }
+       // ============================================================
+// ADD TO CART - CON CANTIDAD PERSONALIZABLE
+// ============================================================
+function addToCart(productId, nombre, precio, imagen, cantidad = 1) {
+    const cart = getCart();
+    const existingItem = cart.find(item => item.id === productId);
+    
+    // Asegurar que el precio sea un número
+    let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
+    let cantidadLimpia = parseInt(cantidad) || 1;
+    if (cantidadLimpia < 1) cantidadLimpia = 1;
+    
+    if (existingItem) {
+        existingItem.cantidad = (existingItem.cantidad || 0) + cantidadLimpia;
+    } else {
+        cart.push({ 
+            id: productId, 
+            nombre: nombre, 
+            precio: precioLimpio, 
+            imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', 
+            cantidad: cantidadLimpia 
+        });
+    }
+    saveCart(cart);
+    actualizarBadgeCarrito();
+    Swal.fire({ 
+        icon: 'success', 
+        title: '¡Agregado!', 
+        text: cantidadLimpia + ' x ' + nombre + ' agregado al carrito.', 
+        background: '#1a1a1a', 
+        color: '#ffffff', 
+        timer: 1500, 
+        showConfirmButton: false 
+    });
+}
+          // ============================================================
+// FUNCIONES PARA EL SELECTOR DE CANTIDAD EN CATÁLOGO
+// ============================================================
+function cambiarCantidadCatalogo(productoId, cambio) {
+    const input = document.getElementById('qty-' + productoId);
+    if (!input) return;
+    
+    let cantidad = parseInt(input.value) || 1;
+    cantidad += cambio;
+    
+    if (cantidad < 1) cantidad = 1;
+    if (cantidad > 9999) cantidad = 9999;
+    
+    input.value = cantidad;
+}
 
+function validarCantidadCatalogo(productoId) {
+    const input = document.getElementById('qty-' + productoId);
+    if (!input) return;
+    
+    let cantidad = parseInt(input.value);
+    if (isNaN(cantidad) || cantidad < 1) {
+        cantidad = 1;
+    }
+    if (cantidad > 9999) {
+        cantidad = 9999;
+    }
+    input.value = cantidad;
+}
+
+function agregarConCantidad(productoId, nombre, precio, imagen) {
+    const input = document.getElementById('qty-' + productoId);
+    let cantidad = 1;
+    
+    if (input) {
+        cantidad = parseInt(input.value) || 1;
+        if (cantidad < 1) cantidad = 1;
+        if (cantidad > 9999) cantidad = 9999;
+    }
+    
+    // Llamar a addToCart con la cantidad
+    addToCart(productoId, nombre, precio, imagen, cantidad);
+    
+    // Resetear el input a 1 después de agregar
+    if (input) {
+        input.value = 1;
+    }
+}
         // ============================================================
         // VARIABLES GLOBALES
         // ============================================================
@@ -380,20 +480,25 @@
                 const enStock = producto.stock > 0;
                 const badgeClass = enStock ? 'stock' : 'agotado';
                 const badgeText = enStock ? `Stock: ${producto.stock}` : 'Agotado';
-                html += `<div class="producto-card">
-                    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">
-                    <span class="producto-badge ${badgeClass}">${badgeText}</span>
-                    <div class="producto-info">
-                        <div class="categoria">${producto.categoria}</div>
-                        <h3 onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">${producto.nombre}</h3>
-                        <div class="precio">$${producto.precio.toFixed(2)}</div>
-                        <div class="descripcion">${producto.descripcion || ''}</div>
-                        <div class="acciones">
-                            <button class="btn-add" onclick="addToCart(${producto.id}, '${producto.nombre}', ${producto.precio}, '${producto.imagen}')" ${!enStock ? 'disabled' : ''}><i class="fas fa-shopping-cart"></i> Agregar</button>
-                            <button class="btn-detail" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'"><i class="fas fa-eye"></i></button>
-                        </div>
-                    </div>
-                </div>`;
+                html += `<div class="producto-card" data-producto-id="${producto.id}">
+    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">
+    <span class="producto-badge ${badgeClass}">${badgeText}</span>
+    <div class="producto-info">
+        <div class="categoria">${producto.categoria}</div>
+        <h3 onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">${producto.nombre}</h3>
+        <div class="precio">$${producto.precio.toFixed(2)}</div>
+        <div class="descripcion">${producto.descripcion || ''}</div>
+        <div class="cantidad-selector">
+            <button class="btn-qty-catalogo" onclick="cambiarCantidadCatalogo(${producto.id}, -1)" ${!enStock ? 'disabled' : ''}>-</button>
+            <input type="text" class="qty-catalogo" id="qty-${producto.id}" value="1" onfocus="this.select()" onblur="validarCantidadCatalogo(${producto.id})" ${!enStock ? 'disabled' : ''}>
+            <button class="btn-qty-catalogo" onclick="cambiarCantidadCatalogo(${producto.id}, 1)" ${!enStock ? 'disabled' : ''}>+</button>
+        </div>
+        <div class="acciones">
+            <button class="btn-add" onclick="agregarConCantidad(${producto.id}, '${producto.nombre}', ${producto.precio}, '${producto.imagen}')" ${!enStock ? 'disabled' : ''}><i class="fas fa-shopping-cart"></i> Agregar</button>
+            <button class="btn-detail" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'"><i class="fas fa-eye"></i></button>
+        </div>
+    </div>
+</div>`;
             });
             grid.innerHTML = html;
         }
