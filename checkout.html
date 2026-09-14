@@ -190,7 +190,7 @@
                     <div class="order-items" id="orderItems"></div>
                     <div class="order-totals">
                         <div class="row"><span class="label">Subtotal</span><span id="summarySubtotal">$0.00</span></div>
-                        <div class="row"><span class="label">Impuesto (10%)</span><span id="summaryTax">$0.00</span></div>
+                    
                         <div class="row total"><span>Total</span><span id="summaryTotal">$0.00</span></div>
                     </div>
                     <button class="btn-confirm" id="btnConfirmOrder" onclick="confirmOrder()"><i class="fas fa-check-circle"></i> Confirmar Pedido</button>
@@ -313,10 +313,8 @@
             });
             container.innerHTML = html;
             const subtotal = getCartTotal();
-            const tax = subtotal * 0.10;
-            const total = subtotal + tax;
+            const total = subtotal;
             if (subtotalSpan) subtotalSpan.textContent = '$' + subtotal.toFixed(2);
-            if (taxSpan) taxSpan.textContent = '$' + tax.toFixed(2);
             if (totalSpan) totalSpan.textContent = '$' + total.toFixed(2);
         }
 

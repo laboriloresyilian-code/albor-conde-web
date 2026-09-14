@@ -164,7 +164,7 @@
             <div class="cart-actions"><button class="btn-clear" onclick="clearCart()"><i class="fas fa-trash"></i> Vaciar carrito</button></div>
             <div class="cart-summary">
                 <div class="row"><span class="label">Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-                <div class="row"><span class="label">Impuesto (10%)</span><span id="cartTax">$0.00</span></div>
+            
                 <div class="row total"><span>Total</span><span id="cartTotal">$0.00</span></div>
                 <button class="btn-checkout" onclick="window.location.href='/checkout.html'"><i class="fas fa-lock"></i> Proceder al pago</button>
             </div>
@@ -407,7 +407,7 @@
             const subtotalSpan = document.getElementById('cartSubtotal');
             const taxSpan = document.getElementById('cartTax');
             const totalSpan = document.getElementById('cartTotal');
-            const taxRate = 0.10;
+            
             
             if (!container) return;
             
@@ -448,11 +448,10 @@
             container.innerHTML = html;
             
             const subtotal = getCartTotal();
-            const tax = subtotal * taxRate;
-            const total = subtotal + tax;
+            const total = subtotal;
             
             if (subtotalSpan) subtotalSpan.textContent = '$' + subtotal.toFixed(2);
-            if (taxSpan) taxSpan.textContent = '$' + tax.toFixed(2);
+    
             if (totalSpan) totalSpan.textContent = '$' + total.toFixed(2);
             actualizarBadgeCarrito();
         }
