@@ -142,6 +142,53 @@
         .footer-bottom-links a { color: var(--gray-text); text-decoration: none; font-size: 0.8rem; transition: color 0.3s; }
         .footer-bottom-links a:hover { color: var(--gold); }
 
+        /* ============ SELECTOR DE CANTIDAD EN MODAL ============ */
+.producto-item .cantidad-selector-modal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+.producto-item .cantidad-selector-modal .btn-qty-modal {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: transparent;
+    color: var(--white);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.producto-item .cantidad-selector-modal .btn-qty-modal:hover {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold);
+}
+.producto-item .cantidad-selector-modal .qty-modal {
+    width: 45px;
+    padding: 4px 6px;
+    background: var(--black-soft);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 6px;
+    color: var(--white);
+    font-size: 0.9rem;
+    text-align: center;
+    font-family: 'Inter', Arial, sans-serif;
+    outline: none;
+    -moz-appearance: textfield;
+}
+.producto-item .cantidad-selector-modal .qty-modal::-webkit-inner-spin-button,
+.producto-item .cantidad-selector-modal .qty-modal::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.producto-item .cantidad-selector-modal .qty-modal:focus {
+    border-color: var(--gold);
+}
         @media (max-width: 768px) {
             .hero-content .name { font-size: 2.5rem; }
             .hero-content .badge { font-size: 0.9rem; letter-spacing: 2px; }
@@ -368,38 +415,85 @@
         function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
 
         // ============================================================
-        // ADD TO CART - CORREGIDO (precio como número)
-        // ============================================================
-        function addToCart(productId, nombre, precio, imagen) {
-            const cart = getCart();
-            const existingItem = cart.find(item => item.id === productId);
-            
-            // Asegurar que el precio sea un número
-            let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
-            
-            if (existingItem) {
-                existingItem.cantidad = (existingItem.cantidad || 0) + 1;
-            } else {
-                cart.push({ 
-                    id: productId, 
-                    nombre: nombre, 
-                    precio: precioLimpio, 
-                    imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', 
-                    cantidad: 1 
-                });
-            }
-            saveCart(cart);
-            actualizarBadgeCarrito();
-            Swal.fire({ 
-                icon: 'success', 
-                title: '¡Agregado!', 
-                text: nombre + ' agregado al carrito.', 
-                background: '#1a1a1a', 
-                color: '#ffffff', 
-                timer: 1500, 
-                showConfirmButton: false 
-            });
-        }
+// ADD TO CART - CON CANTIDAD PERSONALIZABLE
+// ============================================================
+function addToCart(productId, nombre, precio, imagen, cantidad = 1) {
+    const cart = getCart();
+    const existingItem = cart.find(item => item.id === productId);
+    
+    let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
+    let cantidadLimpia = parseInt(cantidad) || 1;
+    if (cantidadLimpia < 1) cantidadLimpia = 1;
+    
+    if (existingItem) {
+        existingItem.cantidad = (existingItem.cantidad || 0) + cantidadLimpia;
+    } else {
+        cart.push({ 
+            id: productId, 
+            nombre: nombre, 
+            precio: precioLimpio, 
+            imagen: imagen || 'https://via.placeholder.com/80/808080/FFFFFF?text=Producto', 
+            cantidad: cantidadLimpia 
+        });
+    }
+    saveCart(cart);
+    actualizarBadgeCarrito();
+    Swal.fire({ 
+        icon: 'success', 
+        title: '¡Agregado!', 
+        text: cantidadLimpia + ' x ' + nombre + ' agregado al carrito.', 
+        background: '#1a1a1a', 
+        color: '#ffffff', 
+        timer: 1500, 
+        showConfirmButton: false 
+    });
+}
+// ============================================================
+// FUNCIONES PARA EL SELECTOR DE CANTIDAD EN EL MODAL
+// ============================================================
+function cambiarCantidadModal(productoId, cambio) {
+    const input = document.getElementById('qty-modal-' + productoId);
+    if (!input) return;
+    
+    let cantidad = parseInt(input.value) || 1;
+    cantidad += cambio;
+    
+    if (cantidad < 1) cantidad = 1;
+    if (cantidad > 9999) cantidad = 9999;
+    
+    input.value = cantidad;
+}
+
+function validarCantidadModal(productoId) {
+    const input = document.getElementById('qty-modal-' + productoId);
+    if (!input) return;
+    
+    let cantidad = parseInt(input.value);
+    if (isNaN(cantidad) || cantidad < 1) {
+        cantidad = 1;
+    }
+    if (cantidad > 9999) {
+        cantidad = 9999;
+    }
+    input.value = cantidad;
+}
+
+function agregarConCantidadModal(productoId, nombre, precio, imagen) {
+    const input = document.getElementById('qty-modal-' + productoId);
+    let cantidad = 1;
+    
+    if (input) {
+        cantidad = parseInt(input.value) || 1;
+        if (cantidad < 1) cantidad = 1;
+        if (cantidad > 9999) cantidad = 9999;
+    }
+    
+    addToCart(productoId, nombre, precio, imagen, cantidad);
+    
+    if (input) {
+        input.value = 1;
+    }
+}
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -465,19 +559,24 @@ function getCookie(name) {
             
             let html = '';
             productos.forEach(producto => {
-                html += `<div class="producto-item">
-                    <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer;">
-                    <div class="producto-info">
-                        <h4 onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer; color:#c9a84c;">${producto.nombre}</h4>
-                        <p>${producto.descripcion || ''}</p>
-                    </div>
-                    <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
-                    <div style="display:flex; flex-direction:column; gap:5px;">
-                        <button class="btn-carrito" onclick="addToCart(${producto.id}, '${producto.nombre}', ${producto.precio}, '${producto.imagen}')"><i class="fas fa-shopping-cart"></i> Agregar</button>
-                        <button class="btn-ver-detalle" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">Ver detalle</button>
-                    </div>
-                </div>`;
-            });
+    html += `<div class="producto-item">
+        <img src="${producto.imagen}" alt="${producto.nombre}" class="producto-imagen" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer;">
+        <div class="producto-info">
+            <h4 onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'" style="cursor:pointer; color:#c9a84c;">${producto.nombre}</h4>
+            <p>${producto.descripcion || ''}</p>
+            <div class="cantidad-selector-modal">
+                <button class="btn-qty-modal" onclick="cambiarCantidadModal(${producto.id}, -1)">-</button>
+                <input type="text" class="qty-modal" id="qty-modal-${producto.id}" value="1" onfocus="this.select()" onblur="validarCantidadModal(${producto.id})">
+                <button class="btn-qty-modal" onclick="cambiarCantidadModal(${producto.id}, 1)">+</button>
+            </div>
+        </div>
+        <span class="producto-precio">$${producto.precio.toFixed(2)}</span>
+        <div style="display:flex; flex-direction:column; gap:5px;">
+            <button class="btn-carrito" onclick="agregarConCantidadModal(${producto.id}, '${producto.nombre}', ${producto.precio}, '${producto.imagen}')"><i class="fas fa-shopping-cart"></i> Agregar</button>
+            <button class="btn-ver-detalle" onclick="window.location.href='/detalle-producto.html?id=${producto.id}&cat=${producto.categoria}'">Ver detalle</button>
+        </div>
+    </div>`;
+});
             modalBody.innerHTML = html;
             modal.classList.add('mostrar');
             document.body.style.overflow = 'hidden';
