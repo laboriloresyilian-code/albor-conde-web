@@ -107,7 +107,7 @@
             <a href="/index.html" class="navbar-logo"><span class="logo-text">ALBOR <span>CONDE</span></span><span class="logo-badge">MIPYME</span></a>
             <ul class="navbar-links">
                 <li><a href="/index.html" id="navInicio">Inicio</a></li>
-                <li><a href="/catalogo.html" id="navCatalogo">Catálogo</a></li>
+                <li><a href="/catalogo.html?v=2" id="navCatalogo">Catálogo</a></li>
                 <li><a href="/contacto.html" id="navContacto">Contacto</a></li>
             </ul>
             <div class="navbar-actions">
@@ -147,7 +147,7 @@
                 <h4>Enlaces</h4>
                 <ul>
                     <li><a href="/index.html">Inicio</a></li>
-                    <li><a href="/catalogo.html">Catálogo</a></li>
+                    <li><a href="/catalogo.html?v=2">Catálogo</a></li>
                     <li><a href="/contacto.html">Contacto</a></li>
                     <li><a href="/perfil.html">Mi Perfil</a></li>
                     <li><a href="/historial-pedidos.html">Mis Pedidos</a></li>
@@ -159,8 +159,8 @@
                     <li><a href="/catalogo.html?cat=construccion">Construcción</a></li>
                     <li><a href="/catalogo.html?cat=productos">Productos</a></li>
                     <li><a href="/catalogo.html?cat=textileria">Textilería</a></li>
-                    <li><a href="/catalogo.html">Muebles y Decoración</a></li>
-                    <li><a href="/catalogo.html">Comercio Online</a></li>
+                    <li><a href="/catalogo.html?v=2">Muebles y Decoración</a></li>
+                    <li><a href="/catalogo.html?v=2">Comercio Online</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -197,7 +197,7 @@
             const container = document.getElementById('detailContainer');
 
             if (!productId) {
-                container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto que buscas no existe o la URL es incorrecta.</p><a href="/catalogo.html" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
+                container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto que buscas no existe o la URL es incorrecta.</p><a href="/catalogo.html?v=2" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
                 return;
             }
 
@@ -207,7 +207,7 @@
                 const producto = productos.find(p => p.id === parseInt(productId) || p.id === productId);
 
                 if (!producto) {
-                    container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto con ID "${productId}" no existe.</p><a href="/catalogo.html" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
+                    container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#ff6b6b;"></i><h2 style="margin-top:20px; color:rgba(255,255,255,0.4);">Producto no encontrado</h2><p style="color:rgba(255,255,255,0.2);">El producto con ID "${productId}" no existe.</p><a href="/catalogo.html?v=2" style="display:inline-block; margin-top:20px; color:#c9a84c; text-decoration:none;">← Volver al catálogo</a></div>`;
                     return;
                 }
 
@@ -222,7 +222,7 @@
                         <div class="detail-price">$${producto.precio.toFixed(2)}</div>
                         <div class="detail-actions">
                             <button class="btn-add-cart" onclick="addToCart('${producto.id}', '${producto.nombre}', ${producto.precio}, '${producto.imagen}')"><i class="fas fa-shopping-cart"></i> Agregar al carrito</button>
-                            <a href="/catalogo.html" class="btn-back"><i class="fas fa-arrow-left"></i> Seguir comprando</a>
+                            <a href="/catalogo.html?v=2" class="btn-back"><i class="fas fa-arrow-left"></i> Seguir comprando</a>
                         </div>
                     </div>`;
             } catch (error) {
