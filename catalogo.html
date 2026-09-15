@@ -302,13 +302,54 @@
         function actualizarBadgeCarrito() { const totalItems = getCartItemCount(); const badge = document.getElementById('cartBadge'); if (badge) { badge.textContent = totalItems; badge.style.display = totalItems > 0 ? 'inline-block' : 'none'; } }
 
        // ============================================================
+// FUNCIÓN PARA OBTENER COOKIES (CSRF)
+// ============================================================
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// ============================================================
+// GUARDAR CARRITO EN EL SERVIDOR
+// ============================================================
+async function guardarCarritoEnServidor() {
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!user) return;
+    
+    const cart = getCart();
+    
+    const csrftoken = getCookie('csrftoken');
+    
+    try {
+        await fetch('/api/guardar-carrito/', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ email: user.email, items: cart })
+        });
+    } catch (error) {
+        console.error('Error al guardar carrito:', error);
+    }
+}
+       // ============================================================
 // ADD TO CART - CON CANTIDAD PERSONALIZABLE
 // ============================================================
 function addToCart(productId, nombre, precio, imagen, cantidad = 1) {
     const cart = getCart();
     const existingItem = cart.find(item => item.id == productId);
     
-    // Asegurar que el precio sea un número
     let precioLimpio = typeof precio === 'number' ? precio : parseFloat(precio) || 0;
     let cantidadLimpia = parseInt(cantidad) || 1;
     if (cantidadLimpia < 1) cantidadLimpia = 1;
@@ -326,6 +367,7 @@ function addToCart(productId, nombre, precio, imagen, cantidad = 1) {
     }
     saveCart(cart);
     actualizarBadgeCarrito();
+    guardarCarritoEnServidor();  // ← AGREGAR ESTA LÍNEA
     Swal.fire({ 
         icon: 'success', 
         title: '¡Agregado!', 
