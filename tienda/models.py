@@ -67,6 +67,8 @@ class Pedido(models.Model):
     estado = models.CharField(max_length=20, choices=ESTADOS, default='Pendiente')
     metodo_pago = models.CharField(max_length=50, blank=True, null=True)
     cancelable_hasta = models.DateTimeField(blank=True, null=True)
+    fecha_comprobacion = models.DateTimeField(blank=True, null=True)
+    fecha_pagado = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.usuario.username}"

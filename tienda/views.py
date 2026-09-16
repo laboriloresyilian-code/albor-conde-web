@@ -6,7 +6,7 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import json
 from .models import Producto, Pedido, ItemPedido, Usuario, Categoria, Carrito
-
+from django.utils import timezone
 # ============================================================
 # REPORTLAB PARA PDF
 # ============================================================
@@ -43,7 +43,6 @@ def catalogo_api(request):
 def crear_pedido(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
-    
     try:
         data = json.loads(request.body)
         user_email = data.get('user_email')
@@ -61,11 +60,13 @@ def crear_pedido(request):
         
         # Crear el pedido
         pedido = Pedido.objects.create(
-            usuario=usuario,
-            total=total,
-            metodo_pago=metodo_pago,
-            estado='Pendiente'
-        )
+    usuario=usuario,
+    total=total,
+    metodo_pago=metodo_pago,
+    estado='Pendiente',
+    fecha_comprobacion=timezone.now(),
+    fecha_pagado=timezone.now()
+)
         
         # Crear los items del pedido y actualizar stock
         for item in items:
@@ -80,128 +81,228 @@ def crear_pedido(request):
                 producto.stock -= item['cantidad']
                 producto.save()
         
-        # ============================================================
-        # GENERAR PDF CON REPORTLAB
-        # ============================================================
-        pdf_buffer = BytesIO()
-        doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
-                               rightMargin=2*cm, leftMargin=2*cm,
-                               topMargin=2*cm, bottomMargin=2*cm)
-        
-        styles = getSampleStyleSheet()
-        
-        title_style = ParagraphStyle(
-            'CustomTitle',
-            parent=styles['Heading1'],
-            fontName='Helvetica-Bold',
-            fontSize=18,
-            textColor=colors.HexColor('#c9a84c'),
-            alignment=1,
-            spaceAfter=10,
-        )
-        
-        subtitle_style = ParagraphStyle(
-            'Subtitle',
-            parent=styles['Heading2'],
-            fontName='Helvetica-Bold',
-            fontSize=14,
-            textColor=colors.HexColor('#1a1a1a'),
-            alignment=1,
-            spaceAfter=20,
-        )
-        
-        info_style = ParagraphStyle(
-            'InfoStyle',
-            parent=styles['Normal'],
-            fontName='Helvetica',
-            fontSize=10,
-            textColor=colors.HexColor('#1a1a1a'),
-            spaceAfter=4,
-        )
-        
-        footer_style = ParagraphStyle(
-            'FooterStyle',
-            parent=styles['Normal'],
-            fontName='Helvetica',
-            fontSize=8,
-            textColor=colors.HexColor('#888888'),
-            alignment=1,
-            spaceAfter=4,
-        )
-        
-        elements = []
-        
-        elements.append(Paragraph("ALBOR CONDE", title_style))
-        elements.append(Paragraph("Factura Electrónica", subtitle_style))
-        elements.append(Spacer(1, 0.5*cm))
-        
-        elements.append(Paragraph(f"<b>Cliente:</b> {customer_data.get('name', '')}", info_style))
-        elements.append(Paragraph(f"<b>Email:</b> {customer_data.get('email', '')}", info_style))
-        elements.append(Paragraph(f"<b>Dirección:</b> {customer_data.get('address', '')}", info_style))
-        elements.append(Paragraph(f"<b>Teléfono:</b> {customer_data.get('phone', '')}", info_style))
-        elements.append(Paragraph(f"<b>Fecha:</b> {pedido.fecha.strftime('%d/%m/%Y %H:%M')}", info_style))
-        elements.append(Paragraph(f"<b>Método de pago:</b> {metodo_pago}", info_style))
-        elements.append(Spacer(1, 0.5*cm))
-        
-        table_data = [['Producto', 'Cantidad', 'Precio', 'Subtotal']]
-        for item in items:
-            subtotal = float(item['precio']) * int(item['cantidad'])
-            table_data.append([
-                item['nombre'],
-                str(item['cantidad']),
-                f"${float(item['precio']):.2f}",
-                f"${subtotal:.2f}"
-            ])
-        
-        table_data.append(['', '', 'TOTAL:', f"${total:.2f}"])
-        
-        product_table = Table(table_data, colWidths=[5*cm, 2.5*cm, 2.5*cm, 2.5*cm])
-        product_table.setStyle(TableStyle([
-            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#c9a84c')),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('GRID', (0, 0), (-1, -2), 0.5, colors.grey),
-            ('FONTNAME', (2, -1), (-1, -1), 'Helvetica-Bold'),
-            ('TEXTCOLOR', (2, -1), (-1, -1), colors.HexColor('#c9a84c')),
-        ]))
-        elements.append(product_table)
-        elements.append(Spacer(1, 0.5*cm))
-        
-        elements.append(Paragraph("¡Gracias por tu confianza!", footer_style))
-        elements.append(Paragraph("ALBOR CONDE S.U.R.L - Baracoa, Guantánamo, Cuba", footer_style))
-        elements.append(Paragraph("Teléfono: +53 5 662 0861 | Email: alborconde@gmail.com", footer_style))
-        
-        doc.build(elements)
-        pdf_buffer.seek(0)
-        
-        # Enviar al cliente
-        subject = f"Confirmación de pedido #{pedido.id} - ALBOR CONDE"
-        body = f"Gracias por tu pedido #{pedido.id}. Adjuntamos el detalle."
-        email = EmailMessage(subject, body, 'alborconde@gmail.com', [user_email])
-        email.attach(f'pedido_{pedido.id}.pdf', pdf_buffer.getvalue(), 'application/pdf')
-        email.send()
-        
-        # Enviar a administradores
-        administradores = Usuario.objects.filter(rol='admin')
-        admin_emails = [admin.email for admin in administradores if admin.email]
-        
-        if admin_emails:
-            pdf_buffer.seek(0)
-            email_admin = EmailMessage(
-                subject=f"Nuevo pedido #{pedido.id} - ALBOR CONDE",
-                body=f"El cliente {customer_data.get('name', '')} ha realizado un nuevo pedido. Adjuntamos el detalle.",
-                from_email='alborconde@gmail.com',
-                to=admin_emails
-            )
-            email_admin.attach(f'pedido_{pedido.id}.pdf', pdf_buffer.getvalue(), 'application/pdf')
-            email_admin.send()
-        
-        return JsonResponse({'mensaje': 'Pedido creado exitosamente', 'pedido_id': pedido.id})
-    
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+     # ============================================================
+# GENERAR PDF CON REPORTLAB (ESTRUCTURA TIPO FACTURA)
+# ============================================================
+from reportlab.platypus import Image as RLImage
+import os
+from django.conf import settings
 
+pdf_buffer = BytesIO()
+doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
+                       rightMargin=1.5*cm, leftMargin=1.5*cm,
+                       topMargin=1.5*cm, bottomMargin=1.5*cm)
+
+styles = getSampleStyleSheet()
+
+# Estilos
+title_style = ParagraphStyle(
+    'CustomTitle',
+    parent=styles['Heading1'],
+    fontName='Helvetica-Bold',
+    fontSize=16,
+    textColor=colors.HexColor('#c9a84c'),
+    alignment=0,
+    spaceAfter=5,
+)
+
+company_style = ParagraphStyle(
+    'CompanyStyle',
+    parent=styles['Normal'],
+    fontName='Helvetica',
+    fontSize=9,
+    textColor=colors.HexColor('#888888'),
+    alignment=0,
+    spaceAfter=2,
+)
+
+section_title_style = ParagraphStyle(
+    'SectionTitle',
+    parent=styles['Normal'],
+    fontName='Helvetica-Bold',
+    fontSize=10,
+    textColor=colors.HexColor('#1a1a1a'),
+    spaceAfter=5,
+    spaceBefore=10,
+)
+
+info_style = ParagraphStyle(
+    'InfoStyle',
+    parent=styles['Normal'],
+    fontName='Helvetica',
+    fontSize=9,
+    textColor=colors.HexColor('#1a1a1a'),
+    spaceAfter=3,
+)
+
+footer_style = ParagraphStyle(
+    'FooterStyle',
+    parent=styles['Normal'],
+    fontName='Helvetica',
+    fontSize=8,
+    textColor=colors.HexColor('#888888'),
+    alignment=1,
+    spaceAfter=4,
+)
+
+elements = []
+
+# ============================================================
+# ENCABEZADO CON LOGO
+# ============================================================
+logo_path = os.path.join(settings.BASE_DIR, 'static', 'Imagenes', 'logo.png')
+if os.path.exists(logo_path):
+    logo = RLImage(logo_path, width=3*cm, height=3*cm)
+    header_table = Table([[logo, Paragraph("INMOBILIARIA ALBOR-CONDE<br/>Microempresa Privada", title_style)]],
+                         colWidths=[3.5*cm, 13*cm])
+    header_table.setStyle(TableStyle([
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('LEFTPADDING', (0, 0), (-1, -1), 0),
+        ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+    ]))
+    elements.append(header_table)
+else:
+    elements.append(Paragraph("INMOBILIARIA ALBOR-CONDE", title_style))
+    elements.append(Paragraph("Microempresa Privada", company_style))
+
+elements.append(Spacer(1, 0.3*cm))
+
+# ============================================================
+# DATOS DEL CLIENTE Y OTROS DATOS
+# ============================================================
+fecha_str = pedido.fecha.strftime('%d/%m/%Y %H:%M')
+
+cliente_data = [
+    [Paragraph("<b>CLIENTE</b>", section_title_style), Paragraph("<b>OTROS DATOS</b>", section_title_style)],
+    [Paragraph(f"{customer_data.get('name', '')}", info_style), Paragraph(f"{customer_data.get('email', '')}", info_style)],
+    [Paragraph(f"{fecha_str}", info_style), Paragraph(f"MIPYME: Albor-Conde SURL", info_style)],
+    [Paragraph(f"Factura No: {pedido.id}", info_style), Paragraph(f"Método: {metodo_pago}", info_style)],
+]
+
+cliente_table = Table(cliente_data, colWidths=[9*cm, 7.5*cm])
+cliente_table.setStyle(TableStyle([
+    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+    ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ('LEFTPADDING', (0, 0), (-1, -1), 0),
+]))
+elements.append(cliente_table)
+
+elements.append(Spacer(1, 0.5*cm))
+
+# ============================================================
+# TABLA DE PRODUCTOS
+# ============================================================
+table_data = [['Producto', 'Cantidad', 'Precio', 'Subtotal']]
+for item in items:
+    subtotal = float(item['precio']) * int(item['cantidad'])
+    table_data.append([
+        item['nombre'],
+        str(item['cantidad']),
+        f"${float(item['precio']):.2f}",
+        f"${subtotal:.2f}"
+    ])
+
+product_table = Table(table_data, colWidths=[8*cm, 2.5*cm, 3*cm, 3*cm])
+product_table.setStyle(TableStyle([
+    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTSIZE', (0, 0), (-1, -1), 9),
+    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+    ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
+    ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fcfcfc')]),
+    ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+]))
+elements.append(product_table)
+
+elements.append(Spacer(1, 0.7*cm))
+
+# ============================================================
+# DATOS DEL PAGO
+# ============================================================
+elements.append(Paragraph("<b>DATOS DEL PAGO</b>", section_title_style))
+elements.append(Spacer(1, 0.2*cm))
+
+# Determinar datos según método de pago
+if metodo_pago and 'efectivo' in metodo_pago.lower():
+    # Efectivo: nombre del cliente
+    dato_pago = customer_data.get('name', '')
+    label_pago = "Cliente"
+else:
+    # Transferencia: datos del cliente
+    dato_pago = customer_data.get('name', '')
+    label_pago = "Cliente"
+
+pago_data = [
+    [Paragraph("<b>No. cuenta / Cliente</b>", info_style), Paragraph("<b>Dirección / Método</b>", info_style), Paragraph("<b>Moneda</b>", info_style)],
+    [Paragraph(dato_pago, info_style), Paragraph(metodo_pago or 'N/A', info_style), Paragraph("CUP", info_style)],
+    [Paragraph("<b>Comprobación de pago</b>", info_style), Paragraph("<b>Pagado</b>", info_style), Paragraph("<b>Total</b>", info_style)],
+    [Paragraph(pedido.fecha_comprobacion.strftime('%d/%m/%Y %H:%M') if pedido.fecha_comprobacion else 'Pendiente', info_style),
+     Paragraph(pedido.fecha_pagado.strftime('%d/%m/%Y %H:%M') if pedido.fecha_pagado else fecha_str, info_style),
+     Paragraph(f"${total:.2f}", info_style)],
+]
+
+pago_table = Table(pago_data, colWidths=[5*cm, 5.5*cm, 6*cm])
+pago_table.setStyle(TableStyle([
+    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+    ('BACKGROUND', (0, 2), (-1, 2), colors.HexColor('#1a1a1a')),
+    ('TEXTCOLOR', (0, 2), (-1, 2), colors.white),
+    ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
+    ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+    ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ('TOPPADDING', (0, 0), (-1, -1), 6),
+]))
+elements.append(pago_table)
+
+elements.append(Spacer(1, 0.5*cm))
+
+# ============================================================
+# TOTAL DESTACADO
+# ============================================================
+total_data = [
+    ['', 'TOTAL:', f"${total:.2f}"]
+]
+total_table = Table(total_data, colWidths=[10*cm, 3*cm, 3.5*cm])
+total_table.setStyle(TableStyle([
+    ('FONTNAME', (1, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTSIZE', (1, 0), (-1, 0), 14),
+    ('TEXTCOLOR', (1, 0), (-1, 0), colors.HexColor('#c9a84c')),
+    ('ALIGN', (1, 0), (-1, 0), 'RIGHT'),
+    ('LINEABOVE', (1, 0), (-1, 0), 2, colors.HexColor('#c9a84c')),
+    ('TOPPADDING', (0, 0), (-1, -1), 10),
+]))
+elements.append(total_table)
+
+elements.append(Spacer(1, 1*cm))
+
+# ============================================================
+# PIE DE PÁGINA CON FIRMAS
+# ============================================================
+elements.append(Paragraph("Muchas gracias", ParagraphStyle('Thanks', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#c9a84c'), spaceAfter=10)))
+
+firmas_data = [
+    ['RESPONSABLE DE CARGA', 'FACTURADOR'],
+    ['Firma: _____________________', 'Firma: _____________________'],
+]
+firmas_table = Table(firmas_data, colWidths=[8.5*cm, 8.5*cm])
+firmas_table.setStyle(TableStyle([
+    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTSIZE', (0, 0), (-1, -1), 9),
+    ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
+    ('TOPPADDING', (0, 0), (-1, -1), 15),
+    ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+]))
+elements.append(firmas_table)
+
+elements.append(Spacer(1, 0.5*cm))
+
+elements.append(Paragraph("ALBOR CONDE S.U.R.L - Baracoa, Guantánamo, Cuba", footer_style))
+elements.append(Paragraph("Teléfono: +53 5 662 0861 | Email: alborconde@gmail.com", footer_style))
+
+doc.build(elements)
+pdf_buffer.seek(0)  
+        
 
 # ============================================================
 # API: OBTENER HISTORIAL DE PEDIDOS
