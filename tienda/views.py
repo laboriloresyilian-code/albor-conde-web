@@ -15,6 +15,9 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib import colors
 from reportlab.lib.units import cm
+from reportlab.platypus import Image as RLImage
+import os
+from django.conf import settings
 from io import BytesIO
 
 
@@ -84,9 +87,7 @@ def crear_pedido(request):
      # ============================================================
 # GENERAR PDF CON REPORTLAB (ESTRUCTURA TIPO FACTURA)
 # ============================================================
-from reportlab.platypus import Image as RLImage
-import os
-from django.conf import settings
+
 
 pdf_buffer = BytesIO()
 doc = SimpleDocTemplate(pdf_buffer, pagesize=A4,
