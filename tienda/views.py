@@ -100,18 +100,18 @@ def crear_pedido(request):
             'CustomTitle',
             parent=styles['Heading1'],
             fontName='Helvetica-Bold',
-            fontSize=16,
+            fontSize=12,
             textColor=colors.HexColor('#c9a84c'),
             alignment=0,
-            spaceAfter=5,
+            spaceAfter=2,
         )
         
         company_style = ParagraphStyle(
             'CompanyStyle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=9,
-            textColor=colors.HexColor('#888888'),
+            fontSize=10,
+            textColor=colors.HexColor('#1a1a1a'),
             alignment=0,
             spaceAfter=2,
         )
@@ -120,41 +120,41 @@ def crear_pedido(request):
             'SectionTitle',
             parent=styles['Normal'],
             fontName='Helvetica-Bold',
-            fontSize=10,
+            fontSize=9,
             textColor=colors.HexColor('#1a1a1a'),
-            spaceAfter=5,
-            spaceBefore=10,
+            spaceAfter=3,
+            spaceBefore=6,
         )
         
         info_style = ParagraphStyle(
             'InfoStyle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=9,
+            fontSize=8,
             textColor=colors.HexColor('#1a1a1a'),
-            spaceAfter=3,
+            spaceAfter=2,
         )
         
         footer_style = ParagraphStyle(
             'FooterStyle',
             parent=styles['Normal'],
             fontName='Helvetica',
-            fontSize=8,
+            fontSize=7,
             textColor=colors.HexColor('#888888'),
             alignment=1,
-            spaceAfter=4,
+            spaceAfter=2,
         )
         
         elements = []
         
         # ============================================================
-        # ENCABEZADO CON LOGO
+        # ENCABEZADO CON LOGO (CORREGIDO)
         # ============================================================
-        logo_path = os.path.join(settings.BASE_DIR, 'static', 'Imagenes', 'logo.png')
+        logo_path = os.path.join(settings.PROJECT_ROOT, 'staticfiles', 'Imagenes', 'logo.png')
         if os.path.exists(logo_path):
-            logo = RLImage(logo_path, width=3*cm, height=3*cm)
-            header_table = Table([[logo, Paragraph("INMOBILIARIA ALBOR-CONDE<br/>Microempresa Privada", title_style)]],
-                                 colWidths=[3.5*cm, 13*cm])
+            logo = RLImage(logo_path, width=2.5*cm, height=2.5*cm)
+            header_table = Table([[logo, Paragraph("<b>INMOBILIARIA ALBOR-CONDE</b><br/><font size=9 color='#1a1a1a'>Microempresa Privada</font>", title_style)]],
+                                 colWidths=[3*cm, 13.5*cm])
             header_table.setStyle(TableStyle([
                 ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                 ('LEFTPADDING', (0, 0), (-1, -1), 0),
@@ -162,10 +162,10 @@ def crear_pedido(request):
             ]))
             elements.append(header_table)
         else:
-            elements.append(Paragraph("INMOBILIARIA ALBOR-CONDE", title_style))
+            elements.append(Paragraph("<b>INMOBILIARIA ALBOR-CONDE</b>", title_style))
             elements.append(Paragraph("Microempresa Privada", company_style))
         
-        elements.append(Spacer(1, 0.3*cm))
+        elements.append(Spacer(1, 0.2*cm))
         
         # ============================================================
         # DATOS DEL CLIENTE Y OTROS DATOS
@@ -179,18 +179,18 @@ def crear_pedido(request):
             [Paragraph(f"Factura No: {pedido.id}", info_style), Paragraph(f"Método: {metodo_pago}", info_style)],
         ]
         
-        cliente_table = Table(cliente_data, colWidths=[9*cm, 7.5*cm])
+        cliente_table = Table(cliente_data, colWidths=[8.5*cm, 8*cm])
         cliente_table.setStyle(TableStyle([
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
             ('LEFTPADDING', (0, 0), (-1, -1), 0),
         ]))
         elements.append(cliente_table)
         
-        elements.append(Spacer(1, 0.5*cm))
+        elements.append(Spacer(1, 0.3*cm))
         
         # ============================================================
-        # TABLA DE PRODUCTOS
+        # TABLA DE PRODUCTOS (CORREGIDA)
         # ============================================================
         table_data = [['Producto', 'Cantidad', 'Precio', 'Subtotal']]
         for item in items:
@@ -205,19 +205,20 @@ def crear_pedido(request):
         product_table = Table(table_data, colWidths=[8*cm, 2.5*cm, 3*cm, 3*cm])
         product_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
             ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fcfcfc')]),
             ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+            ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#1a1a1a')),
         ]))
         elements.append(product_table)
         
-        elements.append(Spacer(1, 0.7*cm))
+        elements.append(Spacer(1, 0.5*cm))
         
         # ============================================================
-        # DATOS DEL PAGO
+        # DATOS DEL PAGO (CORREGIDO)
         # ============================================================
         elements.append(Paragraph("<b>DATOS DEL PAGO</b>", section_title_style))
         elements.append(Spacer(1, 0.2*cm))
@@ -244,12 +245,14 @@ def crear_pedido(request):
             ('TEXTCOLOR', (0, 2), (-1, 2), colors.white),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
-            ('TOPPADDING', (0, 0), (-1, -1), 6),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+            ('TOPPADDING', (0, 0), (-1, -1), 4),
+            ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a1a1a')),
+            ('TEXTCOLOR', (0, 3), (-1, 3), colors.HexColor('#1a1a1a')),
         ]))
         elements.append(pago_table)
         
-        elements.append(Spacer(1, 0.5*cm))
+        elements.append(Spacer(1, 0.4*cm))
         
         # ============================================================
         # TOTAL DESTACADO
@@ -260,37 +263,37 @@ def crear_pedido(request):
         total_table = Table(total_data, colWidths=[10*cm, 3*cm, 3.5*cm])
         total_table.setStyle(TableStyle([
             ('FONTNAME', (1, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (1, 0), (-1, 0), 14),
+            ('FONTSIZE', (1, 0), (-1, 0), 12),
             ('TEXTCOLOR', (1, 0), (-1, 0), colors.HexColor('#c9a84c')),
             ('ALIGN', (1, 0), (-1, 0), 'RIGHT'),
             ('LINEABOVE', (1, 0), (-1, 0), 2, colors.HexColor('#c9a84c')),
-            ('TOPPADDING', (0, 0), (-1, -1), 10),
+            ('TOPPADDING', (0, 0), (-1, -1), 8),
         ]))
         elements.append(total_table)
         
-        elements.append(Spacer(1, 1*cm))
+        elements.append(Spacer(1, 0.8*cm))
         
         # ============================================================
         # PIE DE PÁGINA CON FIRMAS
         # ============================================================
-        elements.append(Paragraph("Muchas gracias", ParagraphStyle('Thanks', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#c9a84c'), spaceAfter=10)))
+        elements.append(Paragraph("Muchas gracias", ParagraphStyle('Thanks', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=10, textColor=colors.HexColor('#c9a84c'), spaceAfter=8)))
         
         firmas_data = [
             ['RESPONSABLE DE CARGA', 'FACTURADOR'],
             ['Firma: _____________________', 'Firma: _____________________'],
         ]
-        firmas_table = Table(firmas_data, colWidths=[8.5*cm, 8.5*cm])
+        firmas_table = Table(firmas_data, colWidths=[8.5*cm, 8*cm])
         firmas_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
-            ('TOPPADDING', (0, 0), (-1, -1), 15),
-            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+            ('TOPPADDING', (0, 0), (-1, -1), 12),
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))
         elements.append(firmas_table)
         
-        elements.append(Spacer(1, 0.5*cm))
+        elements.append(Spacer(1, 0.4*cm))
         
         elements.append(Paragraph("ALBOR CONDE S.U.R.L - Baracoa, Guantánamo, Cuba", footer_style))
         elements.append(Paragraph("Teléfono: +53 5 662 0861 | Email: alborconde@gmail.com", footer_style))
