@@ -202,11 +202,11 @@ def crear_pedido(request):
                 f"${subtotal:.2f}"
             ])
         
-        product_table = Table(table_data, colWidths=[8*cm, 2.5*cm, 3*cm, 3*cm])
+            product_table = Table(table_data, colWidths=[8*cm, 2.5*cm, 3*cm, 3*cm])
         product_table.setStyle(TableStyle([
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, -1), 8),
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#c9a84c')), 
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
             ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#fcfcfc')]),
@@ -239,16 +239,16 @@ def crear_pedido(request):
         
         pago_table = Table(pago_data, colWidths=[5*cm, 5.5*cm, 6*cm])
         pago_table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1a1a1a')),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#c9a84c')),  # ← DORADO
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('BACKGROUND', (0, 2), (-1, 2), colors.HexColor('#1a1a1a')),
+            ('BACKGROUND', (0, 2), (-1, 2), colors.HexColor('#c9a84c')),  # ← DORADO
             ('TEXTCOLOR', (0, 2), (-1, 2), colors.white),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
             ('TOPPADDING', (0, 0), (-1, -1), 4),
-            ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a1a1a')),
-            ('TEXTCOLOR', (0, 3), (-1, 3), colors.HexColor('#1a1a1a')),
+            ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a1a1a')),  # ← TEXTO NEGRO
+            ('TEXTCOLOR', (0, 3), (-1, 3), colors.HexColor('#1a1a1a')),  # ← TEXTO NEGRO
         ]))
         elements.append(pago_table)
         
