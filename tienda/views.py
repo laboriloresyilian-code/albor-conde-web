@@ -144,6 +144,15 @@ def crear_pedido(request):
             alignment=1,
             spaceAfter=2,
         )
+        # Estilo para celdas doradas (texto BLANCO)
+        header_pago_style = ParagraphStyle(
+           'HeaderPagoStyle',
+            parent=styles['Normal'],
+            fontName='Helvetica-Bold',
+            fontSize=8,
+            textColor=colors.white,  # ← TEXTO BLANCO FORZADO
+            spaceAfter=0,
+        )
         
         elements = []
         
@@ -229,29 +238,27 @@ def crear_pedido(request):
             dato_pago = customer_data.get('name', '')
         
         pago_data = [
-            [Paragraph("<b>No. cuenta / Cliente</b>", info_style), Paragraph("<b>Dirección / Método</b>", info_style), Paragraph("<b>Moneda</b>", info_style)],
-            [Paragraph(dato_pago, info_style), Paragraph(metodo_pago or 'N/A', info_style), Paragraph("CUP", info_style)],
-            [Paragraph("<b>Comprobación de pago</b>", info_style), Paragraph("<b>Pagado</b>", info_style), Paragraph("<b>Total</b>", info_style)],
-            [Paragraph(pedido.fecha_comprobacion.strftime('%d/%m/%Y %H:%M') if pedido.fecha_comprobacion else 'Pendiente', info_style),
-             Paragraph(pedido.fecha_pagado.strftime('%d/%m/%Y %H:%M') if pedido.fecha_pagado else fecha_str, info_style),
-             Paragraph(f"${total:.2f}", info_style)],
-        ]
+    [Paragraph("<b>No. cuenta / Cliente</b>", header_pago_style), 
+     Paragraph("<b>Dirección / Método</b>", header_pago_style), 
+     Paragraph("<b>Moneda</b>", header_pago_style)],
+    
+    [Paragraph(dato_pago, info_style), 
+     Paragraph(metodo_pago or 'N/A', info_style), 
+     Paragraph("CUP", info_style)],
+    
+    [Paragraph("<b>Comprobación de pago</b>", header_pago_style), 
+     Paragraph("<b>Pagado</b>", header_pago_style), 
+     Paragraph("<b>Total</b>", header_pago_style)],
+    
+    [Paragraph(pedido.fecha_comprobacion.strftime('%d/%m/%Y %H:%M') if pedido.fecha_comprobacion else 'Pendiente', info_style),
+     Paragraph(pedido.fecha_pagado.strftime('%d/%m/%Y %H:%M') if pedido.fecha_pagado else fecha_str, info_style),
+     Paragraph(f"${total:.2f}", info_style)],
+]
         
         pago_table = Table(pago_data, colWidths=[5*cm, 5.5*cm, 6*cm])
         pago_table.setStyle(TableStyle([
-    # 1. PRIMERO todos los BACKGROUND
     ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#c9a84c')),
     ('BACKGROUND', (0, 2), (-1, 2), colors.HexColor('#c9a84c')),
-    ('BACKGROUND', (0, 1), (-1, 1), colors.white),
-    ('BACKGROUND', (0, 3), (-1, 3), colors.white),
-    
-    # 2. DESPUÉS todos los TEXTCOLOR
-    ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-    ('TEXTCOLOR', (0, 2), (-1, 2), colors.white),
-    ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#1a1a1a')),
-    ('TEXTCOLOR', (0, 3), (-1, 3), colors.HexColor('#1a1a1a')),
-    
-    # 3. Estilos generales al final
     ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#e8e8e8')),
     ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
